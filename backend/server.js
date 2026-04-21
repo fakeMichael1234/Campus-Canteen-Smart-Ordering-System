@@ -20,9 +20,13 @@ const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
 
 // Initialize data directory & files
 const initData = () => {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE, '[]');
-  if (!fs.existsSync(ORDERS_FILE)) fs.writeFileSync(ORDERS_FILE, '[]');
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    if (!fs.existsSync(USERS_FILE)) fs.writeFileSync(USERS_FILE, '[]');
+    if (!fs.existsSync(ORDERS_FILE)) fs.writeFileSync(ORDERS_FILE, '[]');
+  } catch (err) {
+    console.warn("⚠️  Data initialization skipped (Read-only filesystem)");
+  }
 };
 
 // In-memory cache for Vercel (since filesystem is read-only)
