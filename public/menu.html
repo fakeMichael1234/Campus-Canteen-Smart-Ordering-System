@@ -212,12 +212,14 @@
   </div>
 </div>
 
-<!-- BOTTOM CHECKOUT BAR -->
-<div class="cart-bottom-bar" id="cartBarContainer" style="display:none;">
-    <div class="cart-summary-text">
-      <span id="cartCountPill">0</span> items | ₹<span id="cartTotalPill">0.00</span>
+<!-- THE CHECKOUT BAR (Reliable & Fixed) -->
+<div id="cartBarContainer" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#ff6b35; color:white; padding:18px; z-index:9999; display:flex; align-items:center; justify-content:space-between; box-shadow:0 -5px 20px rgba(0,0,0,0.4);">
+    <div style="font-weight:700; font-size:1.1rem;">
+      🛒 <span id="cartCountPill">0</span> Items in Cart
     </div>
-    <a href="cart.html" class="btn btn-primary" id="cartBarPill">View Cart →</a>
+    <a href="cart.html" style="background:white; color:#ff6b35; padding:10px 24px; border-radius:50px; font-weight:800; text-decoration:none; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+      PROCEED TO PAYMENT →
+    </a>
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
@@ -422,41 +424,26 @@
 
   function updateCartBar() {
     try {
-      const container = document.getElementById('cartBarContainer');
+      const bar = document.getElementById('cartBarContainer');
+      const countLabel = document.getElementById('cartCountPill');
       const navCartBtn = document.getElementById('navCartBtn');
-      const totalItems = Object.values(cart).reduce((s,q) => s + (Number(q) || 0), 0);
       
-      if (!totalItems || totalItems <= 0) { 
-        if (container) container.style.display = 'none'; 
+      let total = 0;
+      for (let key in cart) {
+        total += (Number(cart[key]) || 0);
+      }
+      
+      if (total > 0) {
+        if (bar) bar.setAttribute('style', 'display:flex !important; position:fixed; bottom:0; left:0; right:0; background:#ff6b35; color:white; padding:18px; z-index:9999; align-items:center; justify-content:space-between; box-shadow:0 -5px 20px rgba(0,0,0,0.4);');
+        if (countLabel) countLabel.textContent = total;
+        if (navCartBtn) navCartBtn.style.display = 'flex';
+        if (document.getElementById('navCartCount')) document.getElementById('navCartCount').textContent = total;
+      } else {
+        if (bar) bar.style.display = 'none';
         if (navCartBtn) navCartBtn.style.display = 'none';
-        return; 
       }
-      
-      // Update Bottom Bar
-      if (container) {
-        container.style.display = 'flex';
-        const countEl = document.getElementById('cartCountPill');
-        const totalEl = document.getElementById('cartTotalPill');
-        
-        if (countEl) countEl.textContent = totalItems;
-        
-        if (totalEl) {
-          const total = Object.entries(cart).reduce((s, [id, qty]) => {
-            const item = allMenuItems.find(i => String(i.id) === String(id));
-            return s + (item ? item.price * qty : 0);
-          }, 0);
-          totalEl.textContent = total.toFixed(2);
-        }
-      }
-      
-      // Update Navbar Icon
-      if (navCartBtn) {
-        navCartBtn.style.display = 'flex';
-        const navCount = document.getElementById('navCartCount');
-        if (navCount) navCount.textContent = totalItems;
-      }
-    } catch (err) {
-      console.error("Cart update error:", err);
+    } catch (e) {
+      console.error(e);
     }
   }
 
