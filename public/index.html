@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Bites – College Food Order</title>
+  <meta name="description" content="Order food faster at your college canteen. Skip the queue, pay online, get your e-bill instantly." />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    .login-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 768px) {
+      .login-page { grid-template-columns: 1fr; }
+      .login-hero { display: none; }
+    }
+
+    /* LEFT: HERO */
+    .login-hero {
+      position: relative;
+      background: linear-gradient(160deg, #1a0a00 0%, #0a0a12 60%);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 40px;
+      text-align: center;
+    }
+    .hero-bg-circles {
+      position: absolute; inset: 0; pointer-events: none;
+    }
+    .hero-bg-circles span {
+      position: absolute; border-radius: 50%;
+      background: radial-gradient(circle, var(--primary-glow), transparent);
+    }
+    .hero-bg-circles span:nth-child(1) { width:400px; height:400px; top:-80px; left:-80px; opacity:0.5; }
+    .hero-bg-circles span:nth-child(2) { width:300px; height:300px; bottom:-60px; right:-60px; opacity:0.3; }
+    .hero-bg-circles span:nth-child(3) { width:200px; height:200px; top:50%; left:60%; opacity:0.2; background: radial-gradient(circle, rgba(139,92,246,0.3), transparent); }
+
+    .hero-emoji-wrap { position: relative; margin-bottom: 30px; }
+    .hero-emoji { font-size: 6.5rem; animation: floatBurger 4s ease-in-out infinite; line-height: 1; z-index: 2; position: relative; }
+    .hero-emoji-glow {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 140px; height: 140px; background: var(--primary);
+      filter: blur(60px); opacity: 0.4; border-radius: 50%; z-index: 1;
+      animation: pulseGlow 4s ease-in-out infinite;
+    }
+    @keyframes floatBurger {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+      50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.6; }
+    }
+    .hero-title { font-size: 3rem; font-weight: 900; line-height: 1; margin-bottom: 16px; letter-spacing: -0.02em; }
+    .hero-subtitle { color: var(--text-muted); font-size: 1.05rem; max-width: 380px; line-height: 1.6; font-weight: 400; }
+
+    .features-list { display: flex; flex-direction: column; gap: 12px; margin-top: 36px; text-align: left; }
+    .feature-item {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--glass); backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 16px;
+      font-size: 0.875rem;
+    }
+    .feature-item .fi { font-size: 1.4rem; }
+
+    /* RIGHT: LOGIN PANEL */
+    .login-panel {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 40px;
+      background: var(--bg);
+    }
+    .login-box {
+      width: 100%; max-width: 400px;
+    }
+    .login-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.5rem; font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .login-logo .lgi { font-size: 2rem; }
+    .login-tagline { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 40px; }
+
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 36px;
+    }
+    .success-icon { 
+      font-size: 4rem; margin-bottom: 15px; 
+      animation: checkPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes checkPop {
+      0% { transform: scale(0); opacity: 0; }
+      80% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .success-banner h2 { font-size: 1.6rem; font-weight: 800; color: var(--green); letter-spacing: -0.01em; }
+    .success-banner p { color: var(--text-muted); font-size: 0.95rem; margin-top: 6px; }
+
+    /* Google Button */
+    .btn-google {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 24px; border-radius: 12px;
+      background: white; color: #1a1a1a;
+      border: none; cursor: pointer; width: 100%;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem; font-weight: 600;
+      transition: var(--transition);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+    .btn-google:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+    .btn-google svg { width: 22px; height: 22px; flex-shrink: 0; }
+    .btn-google span { flex: 1; text-align: center; }
+
+    /* Demo Login */
+    .btn-demo {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 13px;
+      background: var(--surface2);
+      border: 1px dashed var(--border);
+      border-radius: 12px; cursor: pointer;
+      color: var(--text-muted); font-size: 0.875rem; font-weight: 500;
+      font-family: 'Poppins', sans-serif;
+      transition: var(--transition);
+    }
+    .btn-demo:hover { border-color: var(--primary); color: var(--primary); }
+
+    .login-note {
+      font-size: 0.75rem; color: var(--text-dim);
+      text-align: center; margin-top: 20px; line-height: 1.6;
+    }
+    .login-note a { color: var(--primary); text-decoration: none; }
+
+    /* Demo modal fields */
+    .demo-form { display: flex; flex-direction: column; gap: 16px; }
+  </style>
+</head>
+<body>
+
+<div class="login-page">
+  <!-- HERO SECTION -->
+  <div class="login-hero">
+    <div class="hero-bg-circles">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="hero-emoji-wrap">
+      <div class="hero-emoji">🍔</div>
+      <div class="hero-emoji-glow"></div>
+    </div>
+    <h1 class="hero-title">
+      <span class="gradient-text">Campus</span><br>Bites
+    </h1>
+    <p class="hero-subtitle">
+      Pre-order your meals, skip the queue & enjoy hot food — the smart way to eat at college.
+    </p>
+    <div class="features-list">
+      <div class="feature-item"><span class="fi">🛒</span> Browse full canteen menu online</div>
+      <div class="feature-item"><span class="fi">🥦</span> Veg-only mode for easy filtering</div>
+      <div class="feature-item"><span class="fi">💳</span> Pay via UPI or card instantly</div>
+      <div class="feature-item"><span class="fi">📱</span> Get QR-coded e-bill at reception</div>
+    </div>
+  </div>
+
+  <!-- LOGIN PANEL -->
+  <div class="login-panel">
+    <div class="login-box fade-in">
+      <div class="login-logo">
+        <span class="lgi">🍽️</span>
+        Campus<span style="color:var(--primary)">Bites</span>
+      </div>
+      <p class="login-tagline">Your college canteen, now faster.</p>
+
+      <div class="login-card">
+        <h2>Welcome Back 👋</h2>
+        <p>Sign in to order your favourite meals</p>
+
+        <div id="g_id_onload"
+             data-client_id="527171680624-bi73eakcr6ksqlos3p4o970pbcg446k6.apps.googleusercontent.com"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="true"
+             data-auto_select="true">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left"
+             style="display: flex; justify-content: center;">
+        </div>
+
+        <p class="login-note">
+          By signing in, you agree to our terms of service.<br>
+          Experience the fastest way to order food at your college canteen.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  const API = 'http://localhost:3000';
+
+  // Check if already logged in
+  window.addEventListener('DOMContentLoaded', () => {
+    const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
+    if (user) redirectAfterLogin(user);
+  });
+
+  async function redirectAfterLogin(user) {
+    try {
+      const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email)}`);
+      if (res.ok) {
+        const profile = await res.json();
+        if (profile.studentName && profile.regNo) {
+          window.location.href = 'menu.html';
+        } else {
+          window.location.href = 'profile.html';
+        }
+      } else {
+        window.location.href = 'profile.html';
+      }
+    } catch {
+      window.location.href = 'profile.html';
+    }
+  }
+  function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  }
+
+  async function handleCredentialResponse(response) {
+    const payload = parseJwt(response.credential);
+    
+    const user = {
+      googleId: payload.sub,
+      googleName: payload.name,
+      email: payload.email,
+      googlePhoto: payload.picture,
+      loginTime: new Date().toISOString()
+    };
+
+    localStorage.setItem('campusBitesUser', JSON.stringify(user));
+
+    // Save to backend
+    try {
+      await fetch(`${API}/api/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: payload.email, googleId: payload.sub, googleName: payload.name, googlePhoto: payload.picture })
+      });
+    } catch {}
+
+    showToast('Welcome, ' + payload.name + '! 🎉', 'success');
+    setTimeout(() => redirectAfterLogin(user), 1000);
+  }
+
+
+  // Toast helper
+  function showToast(msg, type = 'info') {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = (type==='success'?'✅':type==='error'?'❌':'ℹ️') + ' ' + msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+
+</script>
+</body>
+</html>

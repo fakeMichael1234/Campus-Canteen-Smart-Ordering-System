@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order History – Campus Bites</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: var(--bg); padding-bottom: 40px; }
+    .hist-page { max-width: 860px; margin: 0 auto; padding: 24px; }
+
+    /* STATS ROW */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 14px; margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 18px;
+      text-align: center; transition: var(--transition);
+    }
+    .stat-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .stat-icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .stat-num { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* FILTER BAR */
+    .filter-bar {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .filter-bar .search-bar { flex: 1; min-width: 180px; }
+
+    /* ORDER CARD */
+    .order-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden; margin-bottom: 14px;
+      transition: var(--transition);
+      animation: fadeInUp 0.4s ease;
+    }
+    .order-card:hover { border-color: var(--border-hover); }
+
+    .order-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .order-card-header:hover { background: var(--glass); }
+    .order-card.expanded .order-card-header { background: var(--glass); }
+
+    .order-header-left { display: flex; align-items: center; gap: 14px; }
+    .order-icon {
+      width: 46px; height: 46px; border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--primary-glow), transparent);
+      border: 1px solid var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+    .order-id { font-size: 0.85rem; font-weight: 700; }
+    .order-date { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+    .order-items-preview { font-size: 0.78rem; color: var(--text-dim); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 350px; }
+
+    .order-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .order-total { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .expand-icon { color: var(--text-dim); font-size: 0.9rem; transition: transform 0.3s; }
+    .order-card.expanded .expand-icon { transform: rotate(180deg); }
+
+    /* EXPANDED DETAIL */
+    .order-detail {
+      display: none; padding: 0 22px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .order-card.expanded .order-detail { display: block; animation: fadeIn 0.3s ease; }
+
+    .detail-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+      margin: 16px 0;
+    }
+    .detail-cell .dk { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 2px; }
+    .detail-cell .dv { font-size: 0.875rem; font-weight: 600; }
+
+    .detail-items { margin: 0 0 16px; }
+    .detail-items-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; color: var(--text-muted); }
+    .detail-item-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.875rem;
+    }
+    .detail-item-row:last-child { border-bottom: none; }
+    .detail-item-row-left { display: flex; align-items: center; gap: 8px; }
+    .detail-item-row .itemp { color: var(--text-muted); font-size: 0.78rem; }
+    .detail-item-row .items { font-weight: 600; color: var(--primary); }
+
+    .detail-totals {
+      background: var(--surface2); border-radius: var(--radius-sm);
+      padding: 12px; margin-bottom: 14px;
+    }
+    .detail-total-row {
+      display: flex; justify-content: space-between;
+      font-size: 0.82rem; padding: 4px 0; color: var(--text-muted);
+    }
+    .detail-total-row.grand { font-size: 0.95rem; font-weight: 700; color: var(--text); padding-top: 8px; border-top: 1px solid var(--border); margin-top: 4px; }
+    .detail-total-row.grand .gamt { color: var(--primary); }
+
+    .detail-payment {
+      display: flex; align-items: center; gap: 8px; font-size: 0.82rem;
+      color: var(--text-muted); margin-bottom: 14px;
+    }
+
+    .detail-actions { display: flex; gap: 10px; }
+
+    /* NO ORDERS */
+    .no-orders {
+      text-align: center; padding: 80px 20px; color: var(--text-muted);
+    }
+    .no-orders .no-icon { font-size: 4rem; margin-bottom: 16px; display: block; }
+    .no-orders h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+
+    /* LOADING SKELETON */
+    .skl { height: 80px; border-radius: var(--radius-lg); margin-bottom: 14px; }
+
+    @media (max-width: 640px) {
+      .hist-page { padding: 16px; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .detail-grid { grid-template-columns: 1fr; }
+      .order-header-left { min-width: 0; }
+      .order-items-preview { max-width: 180px; }
+      .detail-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="navbar-brand" href="menu.html"><span class="logo-icon">🍽️</span> Campus<span>Bites</span></a>
+  <div class="navbar-actions">
+    <a href="menu.html" class="btn btn-primary btn-sm">🛒 Order Now</a>
+  </div>
+</nav>
+
+<div class="hist-page">
+
+  <!-- PAGE HEADER -->
+  <div style="margin-bottom:24px;">
+    <h1 class="page-title" style="font-size:1.6rem;">📋 Order <span>History</span></h1>
+    <p style="color:var(--text-muted); font-size:0.875rem; margin-top:4px;">All your past orders in one place</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-num" id="st-total">—</div><div class="stat-label">Total Orders</div></div>
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-num" id="st-spent">—</div><div class="stat-label">Total Spent</div></div>
+    <div class="stat-card"><div class="stat-icon">🍽️</div><div class="stat-num" id="st-items">—</div><div class="stat-label">Items Ordered</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num" id="st-fav">—</div><div class="stat-label">Favourite Item</div></div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="histSearch" placeholder="Search orders..." oninput="renderOrders()" />
+    </div>
+    <div class="tabs" style="background:var(--surface2); padding:4px; border-radius:12px;">
+      <button class="tab-btn active" data-filter="all" onclick="selectFilter(this)">All</button>
+      <button class="tab-btn" data-filter="today" onclick="selectFilter(this)">Today</button>
+      <button class="tab-btn" data-filter="week" onclick="selectFilter(this)">This Week</button>
+    </div>
+  </div>
+
+  <!-- ORDERS LIST -->
+  <div id="ordersList">
+    <div class="skeleton skl"></div>
+    <div class="skeleton skl"></div>
+    <div class="skeleton skl"></div>
+  </div>
+
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  const API = 'http://localhost:3000';
+  let allOrders = [];
+  let filterMode = 'all';
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
+    if (!user) { window.location.href = 'index.html'; return; }
+
+    try {
+      const res = await fetch(`${API}/api/orders/user/${encodeURIComponent(user.email)}`);
+      if (res.ok) allOrders = await res.json();
+      else allOrders = [];
+    } catch {
+      showToast('Could not load orders. Is the server running?', 'error');
+      allOrders = [];
+    }
+
+    computeStats();
+    renderOrders();
+  });
+
+  function computeStats() {
+    const total = allOrders.length;
+    const spent = allOrders.reduce((s, o) => s + parseFloat(o.total), 0);
+    const totalItems = allOrders.reduce((s, o) => s + o.items.reduce((ss, i) => ss + i.qty, 0), 0);
+
+    // Favourite item
+    const itemCount = {};
+    allOrders.forEach(o => o.items.forEach(i => {
+      itemCount[i.name] = (itemCount[i.name] || 0) + i.qty;
+    }));
+    const fav = Object.entries(itemCount).sort((a,b) => b[1]-a[1])[0];
+
+    document.getElementById('st-total').textContent = total;
+    document.getElementById('st-spent').textContent = '₹' + spent.toFixed(0);
+    document.getElementById('st-items').textContent = totalItems;
+    document.getElementById('st-fav').textContent = fav ? fav[0].split(' ')[0] : '—';
+  }
+
+  function selectFilter(el) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    filterMode = el.dataset.filter;
+    renderOrders();
+  }
+
+  function renderOrders() {
+    const search = document.getElementById('histSearch').value.trim().toLowerCase();
+    const now = new Date();
+
+    let orders = allOrders.filter(o => {
+      const d = new Date(o.createdAt);
+      if (filterMode === 'today') {
+        if (d.toDateString() !== now.toDateString()) return false;
+      } else if (filterMode === 'week') {
+        const diff = (now - d) / (1000 * 60 * 60 * 24);
+        if (diff > 7) return false;
+      }
+      if (search) {
+        const searchable = (o.orderId + o.items.map(i=>i.name).join(' ')).toLowerCase();
+        if (!searchable.includes(search)) return false;
+      }
+      return true;
+    });
+
+    const container = document.getElementById('ordersList');
+
+    if (orders.length === 0) {
+      container.innerHTML = `
+        <div class="no-orders">
+          <span class="no-icon">📭</span>
+          <h3>${filterMode === 'all' ? 'No orders yet' : 'No orders for this period'}</h3>
+          <p>${filterMode === 'all' ? 'Your order history will appear here once you place your first order.' : 'Try a different time filter or search.'}</p>
+          ${filterMode === 'all' ? '<a href="menu.html" class="btn btn-primary" style="margin-top:20px;">🍽️ Order Now</a>' : ''}
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = orders.map((order, idx) => orderCardHTML(order, idx)).join('');
+  }
+
+  function orderCardHTML(order, idx) {
+    const date = new Date(order.createdAt);
+    const dateStr = date.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    const timeStr = date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+    const itemsPreview = order.items.map(i => `${i.emoji||'🍽️'} ${i.name} ×${i.qty}`).join(' · ');
+    const totalItems = order.items.reduce((s,i)=>s+i.qty, 0);
+
+    return `
+    <div class="order-card" id="oc-${order.orderId}">
+      <div class="order-card-header" onclick="toggleOrder('${order.orderId}')">
+        <div class="order-header-left">
+          <div class="order-icon">🧾</div>
+          <div style="min-width:0;">
+            <div class="order-id">${order.orderId}</div>
+            <div class="order-date">📅 ${dateStr} at ${timeStr}</div>
+            <div class="order-items-preview">${itemsPreview}</div>
+          </div>
+        </div>
+        <div class="order-header-right">
+          <div class="order-total">₹${parseFloat(order.total).toFixed(2)}</div>
+          <span class="status-chip status-confirmed">✅ ${order.status}</span>
+          <span class="expand-icon">▼</span>
+        </div>
+      </div>
+
+      <div class="order-detail" id="od-${order.orderId}">
+        <!-- Student Info -->
+        <div class="detail-grid">
+          <div class="detail-cell"><div class="dk">Student</div><div class="dv">${order.studentName}</div></div>
+          <div class="detail-cell"><div class="dk">Register No.</div><div class="dv">${order.regNo}</div></div>
+          <div class="detail-cell"><div class="dk">Department</div><div class="dv">${order.department}</div></div>
+          <div class="detail-cell"><div class="dk">Items Count</div><div class="dv">${totalItems} items</div></div>
+        </div>
+
+        <!-- Items -->
+        <div class="detail-items">
+          <div class="detail-items-title">🍽️ Items Ordered</div>
+          ${order.items.map(item => `
+            <div class="detail-item-row">
+              <div class="detail-item-row-left">
+                <span style="font-size:1.2rem;">${item.emoji||'🍽️'}</span>
+                <div>
+                  <div style="font-weight:600; font-size:0.875rem;">${item.name}</div>
+                  <div class="itemp">₹${parseFloat(item.price).toFixed(2)} × ${item.qty}</div>
+                </div>
+              </div>
+              <div class="items">₹${(parseFloat(item.price)*item.qty).toFixed(2)}</div>
+            </div>`).join('')}
+        </div>
+
+        <!-- Totals -->
+        <div class="detail-totals">
+          <div class="detail-total-row"><span>Subtotal</span><span>₹${parseFloat(order.subtotal).toFixed(2)}</span></div>
+          <div class="detail-total-row"><span>GST (5%)</span><span>₹${parseFloat(order.gst).toFixed(2)}</span></div>
+          <div class="detail-total-row"><span>Pickup</span><span style="color:var(--green)">FREE</span></div>
+          <div class="detail-total-row grand"><span>Grand Total</span><span class="gamt">₹${parseFloat(order.total).toFixed(2)}</span></div>
+        </div>
+
+        <!-- Payment -->
+        <div class="detail-payment">
+          💳 Paid via <strong style="color:var(--text); margin:0 4px;">${order.paymentMethod}</strong>
+          · Ref: <span style="font-family:monospace; color:var(--primary); margin-left:4px;">${order.paymentRef}</span>
+        </div>
+
+        <!-- Actions -->
+        <div class="detail-actions">
+          <button class="btn btn-outline btn-sm" onclick="viewBill('${order.orderId}')">
+            📄 View E-Bill
+          </button>
+          <a href="menu.html" class="btn btn-secondary btn-sm">
+            🔄 Reorder
+          </a>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function toggleOrder(orderId) {
+    const card = document.getElementById('oc-' + orderId);
+    card.classList.toggle('expanded');
+  }
+
+  async function viewBill(orderId) {
+    try {
+      const res = await fetch(`${API}/api/orders/${orderId}`);
+      if (res.ok) {
+        const order = await res.json();
+        localStorage.setItem('campusBitesCurrentOrder', JSON.stringify(order));
+        window.location.href = 'bill.html';
+      }
+    } catch {
+      showToast('Could not load order details.', 'error');
+    }
+  }
+
+  function showToast(msg, type='info') {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = (type==='error'?'❌':'ℹ️') + ' ' + msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+</script>
+</body>
+</html>

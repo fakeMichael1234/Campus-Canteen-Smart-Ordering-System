@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment – Campus Bites</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: var(--bg); }
+    .pay-page { max-width: 600px; margin: 0 auto; padding: 24px; }
+
+    .pay-head {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 28px;
+    }
+    .back-btn {
+      width: 42px; height: 42px; border-radius: 50%;
+      border: 1px solid var(--border); background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; text-decoration: none; color: var(--text);
+      font-size: 1.1rem; transition: var(--transition); flex-shrink: 0;
+    }
+    .back-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ORDER SUMMARY */
+    .order-summary {
+      background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 18px 22px; margin-bottom: 20px;
+    }
+    .order-summary-top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .order-summary-top h3 { font-size: 0.95rem; font-weight: 600; }
+    .order-summary-items { color: var(--text-muted); font-size: 0.85rem; }
+    .order-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 1rem; font-weight: 700; padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .order-total-row .amt { color: var(--primary); font-size: 1.2rem; }
+
+    /* PAYMENT METHODS */
+    .pay-methods { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .pay-method-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden; transition: var(--transition); cursor: pointer;
+    }
+    .pay-method-card:hover { border-color: var(--primary); }
+    .pay-method-card.selected { border-color: var(--primary); }
+
+    .pay-method-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 20px;
+      background: transparent; border: none; width: 100%; cursor: pointer;
+      text-align: left; transition: background 0.2s;
+    }
+    .pay-method-card.selected .pay-method-header { background: var(--primary-glow); }
+
+    .pay-method-icon { font-size: 2rem; }
+    .pay-method-text h4 { font-weight: 600; font-size: 0.95rem; }
+    .pay-method-text p { font-size: 0.78rem; color: var(--text-muted); }
+    .pay-method-radio {
+      margin-left: auto;
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .pay-method-card.selected .pay-method-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+    .pay-method-card.selected .pay-method-radio::after {
+      content: ''; width: 8px; height: 8px; border-radius: 50%; background: white;
+    }
+
+    /* FORM AREAS */
+    .pay-form { display: none; padding: 0 20px 20px; }
+    .pay-method-card.selected .pay-form { display: block; }
+
+    /* UPI */
+    .upi-qr-box {
+      background: white; border-radius: var(--radius);
+      padding: 20px; text-align: center; margin: 14px 0;
+    }
+    .upi-qr-placeholder {
+      width: 180px; height: 180px; margin: 0 auto;
+      background: repeating-linear-gradient(0deg, #000 0px, #000 8px, #fff 8px, #fff 16px),
+                  repeating-linear-gradient(90deg, #000 0px, #000 8px, #fff 8px, #fff 16px);
+      background-blend-mode: multiply;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .upi-info { text-align: center; margin-bottom: 14px; }
+    .upi-id {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 50px; padding: 8px 16px;
+      font-size: 0.85rem; font-family: monospace; color: var(--primary);
+    }
+    .upi-ref-note { font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 10px; }
+    .upi-input-group { margin-top: 16px; }
+
+    /* CARD */
+    .card-visual {
+      background: linear-gradient(135deg, #1a1a3e, #2d1f5e);
+      border-radius: 16px; padding: 24px;
+      margin-bottom: 18px; position: relative;
+      min-height: 150px; overflow: hidden;
+    }
+    .card-visual::before {
+      content: ''; position: absolute; top: -30px; right: -30px;
+      width: 150px; height: 150px; border-radius: 50%;
+      background: rgba(255,107,53,0.15);
+    }
+    .card-chip { font-size: 2rem; margin-bottom: 16px; }
+    .card-num-display {
+      font-family: monospace; font-size: 1.2rem; letter-spacing: 0.2em;
+      color: white; margin-bottom: 16px;
+    }
+    .card-bottom-row { display: flex; justify-content: space-between; font-size: 0.8rem; color: rgba(255,255,255,0.7); }
+
+    .card-inputs { display: flex; flex-direction: column; gap: 14px; }
+    .card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* SECURITY BADGE */
+    .security-badge {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 0.78rem; color: var(--text-dim); margin-top: 12px;
+    }
+
+    /* PAY BUTTON */
+    .pay-btn-wrap { margin-top: 8px; }
+    .processing-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center; gap: 20px;
+      z-index: 200;
+    }
+    .processing-overlay .po-icon { font-size: 3.5rem; animation: pulse 1s infinite; }
+    .processing-overlay h2 { font-size: 1.4rem; font-weight: 700; }
+    .processing-overlay p { color: var(--text-muted); }
+
+    @media (max-width: 480px) {
+      .pay-page { padding: 16px; }
+      .card-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="navbar-brand" href="menu.html"><span class="logo-icon">🍽️</span> Campus<span>Bites</span></a>
+</nav>
+
+<div class="pay-page">
+  <div class="pay-head">
+    <a href="cart.html" class="back-btn">←</a>
+    <div>
+      <h1 style="font-size:1.5rem; font-weight:700;">💳 Payment</h1>
+      <p style="font-size:0.85rem; color:var(--text-muted);">Choose your preferred payment method</p>
+    </div>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div class="order-summary">
+    <div class="order-summary-top">
+      <h3>📝 Order Summary</h3>
+      <span class="badge badge-primary" id="itemCountBadge">0 items</span>
+    </div>
+    <p class="order-summary-items" id="orderItemsPreview">Loading...</p>
+    <div class="order-total-row">
+      <span>Total to Pay</span>
+      <span class="amt" id="totalDisplay">₹0.00</span>
+    </div>
+  </div>
+
+  <!-- PAYMENT METHODS -->
+  <div class="pay-methods">
+
+    <!-- UPI -->
+    <div class="pay-method-card selected" id="upiCard" onclick="selectPayment('upi')">
+      <div class="pay-method-header">
+        <div class="pay-method-icon">📲</div>
+        <div class="pay-method-text">
+          <h4>UPI Payment</h4>
+          <p>Google Pay, PhonePe, Paytm & more</p>
+        </div>
+        <div class="pay-method-radio"></div>
+      </div>
+      <div class="pay-form" id="upiForm">
+        <div class="upi-info">
+          <div class="upi-qr-box">
+            <div class="upi-qr-placeholder">📱</div>
+            <p style="font-size:0.8rem; color:#333; margin-top:10px;">Scan with any UPI app</p>
+          </div>
+          <div class="upi-id">📲 campus.bites@okaxis</div>
+          <p class="upi-ref-note">After payment, enter the transaction reference below</p>
+        </div>
+        <div class="upi-input-group input-group">
+          <label class="input-label">Transaction Reference (UTR Number)</label>
+          <div class="input-icon-wrap">
+            <span class="icon">#</span>
+            <input class="input" type="text" id="upiRef" placeholder="e.g. 321456789012" maxlength="20" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD -->
+    <div class="pay-method-card" id="cardCard" onclick="selectPayment('card')">
+      <div class="pay-method-header">
+        <div class="pay-method-icon">💳</div>
+        <div class="pay-method-text">
+          <h4>Debit / Credit Card</h4>
+          <p>Visa, Mastercard, RuPay accepted</p>
+        </div>
+        <div class="pay-method-radio"></div>
+      </div>
+      <div class="pay-form" id="cardForm">
+        <div class="card-visual" id="cardVisual">
+          <div class="card-chip">💳</div>
+          <div class="card-num-display" id="cardNumDisplay">•••• •••• •••• ••••</div>
+          <div class="card-bottom-row">
+            <div>
+              <div style="font-size:0.65rem; opacity:0.7;">CARD HOLDER</div>
+              <div id="cardNameDisplay" style="font-size:0.8rem; color:white;">YOUR NAME</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.65rem; opacity:0.7;">EXPIRES</div>
+              <div id="cardExpDisplay" style="font-size:0.8rem; color:white;">MM/YY</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-inputs">
+          <div class="input-group">
+            <label class="input-label">Card Number</label>
+            <div class="input-icon-wrap">
+              <span class="icon">💳</span>
+              <input class="input" type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19"
+                oninput="formatCardNum(this)" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Name on Card</label>
+            <div class="input-icon-wrap">
+              <span class="icon">👤</span>
+              <input class="input" type="text" id="cardName" placeholder="e.g. RAHUL KUMAR"
+                oninput="document.getElementById('cardNameDisplay').textContent = this.value.toUpperCase() || 'YOUR NAME'" />
+            </div>
+          </div>
+          <div class="card-row">
+            <div class="input-group">
+              <label class="input-label">Expiry Date</label>
+              <input class="input" type="text" id="cardExp" placeholder="MM/YY" maxlength="5"
+                oninput="formatExpiry(this)" />
+            </div>
+            <div class="input-group">
+              <label class="input-label">CVV</label>
+              <input class="input" type="password" id="cardCvv" placeholder="•••" maxlength="4" />
+            </div>
+          </div>
+        </div>
+        <div class="security-badge">
+          🔒 256-bit SSL encrypted &nbsp;·&nbsp; PCI Compliant (prototype)
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="pay-btn-wrap">
+    <button class="btn btn-primary btn-full btn-lg" onclick="processPayment()" id="payBtn">
+      🔒 Pay Now
+    </button>
+  </div>
+</div>
+
+<!-- PROCESSING OVERLAY -->
+<div class="processing-overlay" id="processingOverlay">
+  <div class="po-icon">💳</div>
+  <h2>Processing Payment...</h2>
+  <p>Please wait, do not close this page</p>
+  <div class="spinner"></div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  const API = 'http://localhost:3000';
+  let selectedMethod = 'upi';
+  let pendingOrder = null;
+  let userProfile = null;
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
+    if (!user) { window.location.href = 'index.html'; return; }
+
+    pendingOrder = JSON.parse(localStorage.getItem('campusBitesPendingOrder') || 'null');
+    if (!pendingOrder) { window.location.href = 'cart.html'; return; }
+
+    try {
+      const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email)}`);
+      if (res.ok) userProfile = await res.json();
+    } catch {}
+
+    const total = pendingOrder.total;
+    const items = pendingOrder.items;
+    document.getElementById('totalDisplay').textContent = `₹${parseFloat(total).toFixed(2)}`;
+    document.getElementById('itemCountBadge').textContent = `${items.length} items`;
+    document.getElementById('orderItemsPreview').textContent = items.map(i => `${i.emoji} ${i.name} ×${i.qty}`).join(' · ');
+    document.getElementById('payBtn').textContent = `🔒 Pay ₹${parseFloat(total).toFixed(2)}`;
+  });
+
+  function selectPayment(method) {
+    selectedMethod = method;
+    document.getElementById('upiCard').classList.toggle('selected', method === 'upi');
+    document.getElementById('cardCard').classList.toggle('selected', method === 'card');
+  }
+
+  function formatCardNum(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 16);
+    el.value = v.replace(/(\d{4})/g, '$1 ').trim();
+    const masked = (v + '................').substring(0,16);
+    const display = masked.replace(/(\d{4})/g, '$1 ').trim();
+    document.getElementById('cardNumDisplay').textContent = display.replace(/\d(?=.{5,})/g, '•');
+  }
+
+  function formatExpiry(el) {
+    let v = el.value.replace(/\D/g, '');
+    if (v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2,4);
+    el.value = v;
+    document.getElementById('cardExpDisplay').textContent = v || 'MM/YY';
+  }
+
+  async function processPayment() {
+    const user = JSON.parse(localStorage.getItem('campusBitesUser'));
+    let payRef = '';
+
+    if (selectedMethod === 'upi') {
+      payRef = document.getElementById('upiRef').value.trim();
+      if (!payRef) { showToast('Please enter your UPI transaction reference.', 'error'); return; }
+    } else {
+      const num = document.getElementById('cardNumber').value.trim();
+      const name = document.getElementById('cardName').value.trim();
+      const exp = document.getElementById('cardExp').value.trim();
+      const cvv = document.getElementById('cardCvv').value.trim();
+      if (!num || num.replace(/\s/g,'').length < 16) { showToast('Enter valid 16-digit card number.', 'error'); return; }
+      if (!name) { showToast('Enter name on card.', 'error'); return; }
+      if (!exp || exp.length < 5) { showToast('Enter valid expiry date.', 'error'); return; }
+      if (!cvv || cvv.length < 3) { showToast('Enter valid CVV.', 'error'); return; }
+      payRef = 'CARD' + num.replace(/\s/g,'').slice(-4) + '_' + Date.now();
+    }
+
+    // Show processing
+    const overlay = document.getElementById('processingOverlay');
+    overlay.style.display = 'flex';
+    document.getElementById('payBtn').disabled = true;
+
+    // Simulate processing delay
+    await new Promise(r => setTimeout(r, 2000));
+
+    try {
+      const orderData = {
+        email: user.email,
+        studentName: userProfile?.studentName || user.googleName,
+        regNo: userProfile?.regNo || 'N/A',
+        department: userProfile?.department || 'N/A',
+        items: pendingOrder.items,
+        subtotal: pendingOrder.subtotal,
+        gst: pendingOrder.gst,
+        total: pendingOrder.total,
+        paymentMethod: selectedMethod.toUpperCase(),
+        paymentRef: payRef,
+      };
+
+      const res = await fetch(`${API}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!res.ok) throw new Error();
+      const { order } = await res.json();
+
+      // Clear cart
+      localStorage.removeItem('campusBitesCart');
+      localStorage.removeItem('campusBitesPendingOrder');
+      localStorage.setItem('campusBitesCurrentOrder', JSON.stringify(order));
+
+      window.location.href = 'bill.html';
+    } catch {
+      overlay.style.display = 'none';
+      document.getElementById('payBtn').disabled = false;
+      showToast('Payment failed. Check server connection.', 'error');
+    }
+  }
+
+  function showToast(msg, type='info') {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = (type==='error'?'❌':'ℹ️') + ' ' + msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+  }
+</script>
+</body>
+</html>

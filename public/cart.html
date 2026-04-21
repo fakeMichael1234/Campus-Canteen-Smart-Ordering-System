@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart – Campus Bites</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { background: var(--bg); }
+    .cart-page { max-width: 780px; margin: 0 auto; padding: 24px; }
+
+    /* HEADER */
+    .cart-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 28px;
+    }
+    .back-btn {
+      width: 42px; height: 42px; border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; text-decoration: none; color: var(--text);
+      font-size: 1.1rem; transition: var(--transition); flex-shrink: 0;
+    }
+    .back-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .cart-head h1 { font-size: 1.5rem; font-weight: 700; }
+    .cart-head p { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* STUDENT INFO */
+    .student-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 22px;
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 20px;
+    }
+    .student-icon {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #ff9a5e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+    }
+    .student-info h4 { font-size: 0.95rem; font-weight: 600; }
+    .student-info p { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* CART ITEMS */
+    .cart-items-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .cart-items-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600; font-size: 0.95rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cart-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: var(--transition);
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item:hover { background: var(--glass); }
+    .ci-emoji { font-size: 1.8rem; flex-shrink: 0; }
+    .ci-info { flex: 1; }
+    .ci-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .ci-price { font-size: 0.8rem; color: var(--text-muted); }
+    .ci-qty-control { display: flex; align-items: center; gap: 8px; }
+    .ci-qty-btn {
+      width: 30px; height: 30px; border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text);
+      cursor: pointer; font-size: 1rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .ci-qty-btn:hover { background: var(--surface3); }
+    .ci-qty-btn.remove:hover { background: var(--red); border-color: var(--red); }
+    .ci-qty-num { font-size: 0.95rem; font-weight: 600; min-width: 22px; text-align: center; }
+    .ci-subtotal { font-size: 0.95rem; font-weight: 700; color: var(--primary); min-width: 70px; text-align: right; }
+
+    /* BILL SUMMARY */
+    .bill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+    .bill-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; }
+    .bill-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.875rem;
+    }
+    .bill-row:last-child { border-bottom: none; }
+    .bill-row.total {
+      padding-top: 14px; font-size: 1.1rem; font-weight: 700;
+      border-top: 2px solid var(--border);
+    }
+    .bill-row.total .amount { color: var(--primary); font-size: 1.3rem; }
+    .bill-row .label { color: var(--text-muted); }
+    .bill-row .amount { font-weight: 600; }
+    .savings-note {
+      background: var(--green-glow); border: 1px solid rgba(34,197,94,0.2);
+      border-radius: var(--radius-sm); padding: 8px 12px;
+      font-size: 0.8rem; color: var(--green); text-align: center;
+      margin-top: 14px;
+    }
+
+    /* EMPTY CART */
+    .empty-cart-wrap { padding: 60px 20px; text-align: center; }
+    .empty-cart-wrap .ec-icon { font-size: 4rem; margin-bottom: 16px; }
+    .empty-cart-wrap h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+    .empty-cart-wrap p { color: var(--text-muted); margin-bottom: 24px; }
+
+    .proceed-btn-wrap { position: sticky; bottom: 0; background: var(--bg); padding: 16px 0 20px; }
+
+    @media (max-width: 600px) {
+      .cart-page { padding: 16px; }
+      .ci-subtotal { min-width: 55px; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="navbar-brand" href="menu.html"><span class="logo-icon">🍽️</span> Campus<span>Bites</span></a>
+  <div class="navbar-actions">
+    <a href="history.html" class="btn btn-ghost btn-sm">📋 Orders</a>
+  </div>
+</nav>
+
+<div class="cart-page">
+  <!-- HEADER -->
+  <div class="cart-head">
+    <a href="menu.html" class="back-btn" title="Back to Menu">←</a>
+    <div>
+      <h1>🛒 Your Cart</h1>
+      <p>Review your order before payment</p>
+    </div>
+  </div>
+
+  <div id="cartContent">
+    <div class="loading-screen"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  const API = 'http://localhost:3000';
+  let allMenuItems = [];
+  let cart = {};
+  let userProfile = null;
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
+    if (!user) { window.location.href = 'index.html'; return; }
+
+    cart = JSON.parse(localStorage.getItem('campusBitesCart') || '{}');
+
+    try {
+      const [menuRes, profileRes] = await Promise.all([
+        fetch(`${API}/api/menu`),
+        fetch(`${API}/api/users/${encodeURIComponent(user.email)}`)
+      ]);
+      allMenuItems = await menuRes.json();
+      if (profileRes.ok) userProfile = await profileRes.json();
+    } catch { showToast('Server connection failed', 'error'); }
+
+    renderCart();
+  });
+
+  function renderCart() {
+    const content = document.getElementById('cartContent');
+    const cartEntries = Object.entries(cart).filter(([,q]) => q > 0);
+
+    if (cartEntries.length === 0) {
+      content.innerHTML = `
+        <div class="empty-cart-wrap">
+          <div class="ec-icon">🛒</div>
+          <h2>Your cart is empty</h2>
+          <p>Add some delicious items from our menu!</p>
+          <a href="menu.html" class="btn btn-primary btn-lg">Browse Menu</a>
+        </div>`;
+      return;
+    }
+
+    const cartItems = cartEntries.map(([id, qty]) => {
+      const item = allMenuItems.find(i => i.id === parseInt(id));
+      return item ? { ...item, qty, subtotal: item.price * qty } : null;
+    }).filter(Boolean);
+
+    const subtotal = cartItems.reduce((s,i) => s+i.subtotal, 0);
+    const gst = subtotal * 0.05;
+    const total = subtotal + gst;
+    const totalItems = cartItems.reduce((s,i) => s+i.qty, 0);
+
+    const studentHTML = userProfile ? `
+      <div class="student-card">
+        <div class="student-icon">🎓</div>
+        <div class="student-info">
+          <h4>${userProfile.studentName} – ${userProfile.department}</h4>
+          <p>Reg No: ${userProfile.regNo}${userProfile.year ? ' · ' + userProfile.year + ' Year' : ''}</p>
+        </div>
+      </div>` : '';
+
+    content.innerHTML = `
+      ${studentHTML}
+
+      <div class="cart-items-card">
+        <div class="cart-items-header">
+          🍽️ Order Items <span style="color:var(--text-muted); font-weight:400;">(${totalItems} items)</span>
+        </div>
+        ${cartItems.map(item => `
+          <div class="cart-item" id="citem-${item.id}">
+            <div class="ci-emoji">${item.emoji}</div>
+            <div class="ci-info">
+              <div class="ci-name">${item.name}</div>
+              <div class="ci-price">₹${item.price.toFixed(2)} × ${item.qty}</div>
+            </div>
+            <div class="ci-qty-control">
+              <button class="ci-qty-btn remove" onclick="decItem(${item.id})" title="Remove">−</button>
+              <span class="ci-qty-num">${item.qty}</span>
+              <button class="ci-qty-btn" onclick="incItem(${item.id})" title="Add more">+</button>
+            </div>
+            <div class="ci-subtotal">₹${item.subtotal.toFixed(2)}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="bill-card">
+        <h3>💰 Bill Summary</h3>
+        <div class="bill-row">
+          <span class="label">Subtotal (${totalItems} items)</span>
+          <span class="amount">₹${subtotal.toFixed(2)}</span>
+        </div>
+        <div class="bill-row">
+          <span class="label">GST (5%)</span>
+          <span class="amount">₹${gst.toFixed(2)}</span>
+        </div>
+        <div class="bill-row">
+          <span class="label">Delivery</span>
+          <span class="amount" style="color:var(--green);">FREE 🎉</span>
+        </div>
+        <div class="bill-row total">
+          <span>Total Amount</span>
+          <span class="amount">₹${total.toFixed(2)}</span>
+        </div>
+        <div class="savings-note">
+          🎓 Student discount: Free canteen pickup — No delivery charges!
+        </div>
+      </div>
+
+      <div class="proceed-btn-wrap">
+        <button class="btn btn-primary btn-full btn-lg" onclick="proceedToPayment(${subtotal.toFixed(2)}, ${gst.toFixed(2)}, ${total.toFixed(2)})">
+          💳 Proceed to Payment — ₹${total.toFixed(2)}
+        </button>
+      </div>`;
+  }
+
+  function incItem(id) {
+    cart[id] = (cart[id] || 0) + 1;
+    saveCart(); renderCart();
+  }
+
+  function decItem(id) {
+    cart[id] = (cart[id] || 0) - 1;
+    if (cart[id] <= 0) delete cart[id];
+    saveCart(); renderCart();
+  }
+
+  function saveCart() { localStorage.setItem('campusBitesCart', JSON.stringify(cart)); }
+
+  function proceedToPayment(subtotal, gst, total) {
+    const cartEntries = Object.entries(cart).filter(([,q])=>q>0);
+    const cartItems = cartEntries.map(([id, qty]) => {
+      const item = allMenuItems.find(i => i.id === parseInt(id));
+      return item ? { id: item.id, name: item.name, price: item.price, qty, subtotal: item.price*qty, emoji: item.emoji, veg: item.veg } : null;
+    }).filter(Boolean);
+
+    localStorage.setItem('campusBitesPendingOrder', JSON.stringify({
+      items: cartItems, subtotal, gst, total
+    }));
+    window.location.href = 'payment.html';
+  }
+
+  function showToast(msg, type='info') {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+</script>
+</body>
+</html>
