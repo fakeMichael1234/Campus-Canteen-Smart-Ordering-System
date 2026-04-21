@@ -213,7 +213,7 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-  const API = window.location.origin;
+  const API = '';
 
   // Check if already logged in
   window.addEventListener('DOMContentLoaded', () => {
@@ -222,21 +222,9 @@
   });
 
   async function redirectAfterLogin(user) {
-    try {
-      const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email)}`);
-      if (res.ok) {
-        const profile = await res.json();
-        if (profile.studentName && profile.regNo) {
-          window.location.href = 'menu.html';
-        } else {
-          window.location.href = 'profile.html';
-        }
-      } else {
-        window.location.href = 'profile.html';
-      }
-    } catch {
-      window.location.href = 'profile.html';
-    }
+    // If we have a user in localStorage, let them into the menu immediately
+    // but check for profile completion in the background or during first fetch
+    window.location.href = 'menu.html';
   }
   function parseJwt (token) {
     var base64Url = token.split('.')[1];
