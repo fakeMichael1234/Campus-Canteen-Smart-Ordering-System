@@ -25,13 +25,29 @@ const initData = () => {
   if (!fs.existsSync(ORDERS_FILE)) fs.writeFileSync(ORDERS_FILE, '[]');
 };
 
+// In-memory cache for Vercel (since filesystem is read-only)
+const memoryCache = {
+  [USERS_FILE]: null,
+  [ORDERS_FILE]: null
+};
+
 const readJSON = (file) => {
-  try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+  if (memoryCache[file]) return memoryCache[file];
+  try { 
+    const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+    memoryCache[file] = data;
+    return data;
+  }
   catch { return []; }
 };
 
 const writeJSON = (file, data) => {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+  memoryCache[file] = data;
+  try {
+    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.warn(`⚠️  Could not write to ${file}. Running in-memory mode. (Normal on Vercel)`);
+  }
 };
 
 // ===========================
@@ -165,8 +181,15 @@ app.get('*', (req, res) => {
 });
 
 initData();
-app.listen(PORT, () => {
-  console.log(`\n🍽️  College Food Order Server`);
-  console.log(`🚀  Running at: http://localhost:${PORT}`);
-  console.log(`📂  Data stored in: ${DATA_DIR}\n`);
-});
+
+// Export the app for Vercel
+module.exports = app;
+
+// Only listen if not running as a serverless function
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`\n🍽️  College Food Order Server`);
+    console.log(`🚀  Running at: http://localhost:${PORT}`);
+    console.log(`📂  Data stored in: ${DATA_DIR}\n`);
+  });
+}
