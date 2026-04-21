@@ -421,29 +421,43 @@
   function saveCart() { localStorage.setItem('campusBitesCart', JSON.stringify(cart)); }
 
   function updateCartBar() {
-    const container = document.getElementById('cartBarContainer');
-    const navCartBtn = document.getElementById('navCartBtn');
-    const totalItems = Object.values(cart).reduce((s,q)=>s+q, 0);
-    
-    if (totalItems === 0) { 
-      container.style.display = 'none'; 
-      if (navCartBtn) navCartBtn.style.display = 'none';
-      return; 
+    try {
+      const container = document.getElementById('cartBarContainer');
+      const navCartBtn = document.getElementById('navCartBtn');
+      const totalItems = Object.values(cart).reduce((s,q) => s + (Number(q) || 0), 0);
+      
+      if (!totalItems || totalItems <= 0) { 
+        if (container) container.style.display = 'none'; 
+        if (navCartBtn) navCartBtn.style.display = 'none';
+        return; 
+      }
+      
+      // Update Bottom Bar
+      if (container) {
+        container.style.display = 'flex';
+        const countEl = document.getElementById('cartCountPill');
+        const totalEl = document.getElementById('cartTotalPill');
+        
+        if (countEl) countEl.textContent = totalItems;
+        
+        if (totalEl) {
+          const total = Object.entries(cart).reduce((s, [id, qty]) => {
+            const item = allMenuItems.find(i => String(i.id) === String(id));
+            return s + (item ? item.price * qty : 0);
+          }, 0);
+          totalEl.textContent = total.toFixed(2);
+        }
+      }
+      
+      // Update Navbar Icon
+      if (navCartBtn) {
+        navCartBtn.style.display = 'flex';
+        const navCount = document.getElementById('navCartCount');
+        if (navCount) navCount.textContent = totalItems;
+      }
+    } catch (err) {
+      console.error("Cart update error:", err);
     }
-    
-    container.style.display = 'flex';
-    if (navCartBtn) {
-      navCartBtn.style.display = 'flex';
-      document.getElementById('navCartCount').textContent = totalItems;
-    }
-    document.getElementById('cartCountPill').textContent = totalItems;
-    
-    const total = Object.entries(cart).reduce((s, [id, qty]) => {
-      const item = allMenuItems.find(i => i.id === parseInt(id));
-      return s + (item ? item.price * qty : 0);
-    }, 0);
-    
-    document.getElementById('cartTotalPill').textContent = total.toFixed(2);
   }
 
   function logout() {
