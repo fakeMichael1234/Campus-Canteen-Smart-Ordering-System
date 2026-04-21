@@ -162,7 +162,7 @@
 <nav class="menu-nav">
   <div class="menu-nav-top">
     <a class="brand" href="menu.html">🍽️ Campus<span>Bites</span></a>
-    <div class="nav-right">
+      <a class="nav-history-btn" href="cart.html" id="navCartBtn" style="display:none;">🛒 <span id="navCartCount">0</span></a>
       <a class="nav-history-btn" href="history.html">📋 Orders</a>
       <div class="nav-user">
         <div class="nav-user-info">
@@ -428,14 +428,20 @@
 
   function updateCartBar() {
     const container = document.getElementById('cartBarContainer');
+    const navCartBtn = document.getElementById('navCartBtn');
     const totalItems = Object.values(cart).reduce((s,q)=>s+q, 0);
     
     if (totalItems === 0) { 
       container.style.display = 'none'; 
+      if (navCartBtn) navCartBtn.style.display = 'none';
       return; 
     }
     
     container.style.display = 'flex';
+    if (navCartBtn) {
+      navCartBtn.style.display = 'flex';
+      document.getElementById('navCartCount').textContent = totalItems;
+    }
     document.getElementById('cartCountPill').textContent = totalItems;
     
     const total = Object.entries(cart).reduce((s, [id, qty]) => {
