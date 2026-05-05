@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>E-Bill – Campus Bites</title>
+  <meta name="description" content="Your Campus Bites order bill and QR code for reception." />
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
@@ -18,11 +19,7 @@
       padding: 28px; text-align: center; margin-bottom: 24px;
       animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .success-icon {
-      font-size: 4.5rem; margin-bottom: 16px;
-      animation: checkPop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      display: block;
-    }
+    .success-icon { font-size: 4.5rem; margin-bottom: 16px; display: block; animation: checkPop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     @keyframes checkPop {
       0% { transform: scale(0) rotate(-15deg); opacity: 0; }
       80% { transform: scale(1.2) rotate(5deg); }
@@ -33,60 +30,31 @@
 
     /* BILL CARD */
     .bill-print-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-xl); overflow: hidden;
       margin-bottom: 24px;
       animation: fadeInUp 0.5s ease 0.2s both;
     }
 
     /* TOP STRIP */
-    .bill-strip {
-      background: var(--primary);
-      padding: 24px 28px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
+    .bill-strip { background: var(--primary); padding: 24px 28px; display: flex; align-items: center; justify-content: space-between; }
     .bill-strip-left h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; color: #111; letter-spacing: -0.03em; }
     .bill-strip-left p { font-size: 0.82rem; color: rgba(0,0,0,0.6); font-weight: 600; }
-    .bill-logo { font-size: 2.5rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
-
-    /* DASHED DIVIDER */
-    .dashed-div {
-      border: none;
-      border-top: 2px dashed rgba(255,255,255,0.06);
-      margin: 0;
-    }
+    .bill-logo { font-size: 2.5rem; }
+    .dashed-div { border: none; border-top: 2px dashed rgba(255,255,255,0.06); margin: 0; }
 
     /* BILL BODY */
     .bill-body { padding: 24px 28px; }
 
     /* INFO GRID */
-    .info-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 16px; margin-bottom: 24px;
-    }
-    .info-cell .key {
-      font-size: 0.68rem; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: 0.1em;
-      margin-bottom: 4px; font-weight: 700;
-    }
-    .info-cell .val { font-size: 0.9rem; font-weight: 700; letter-spacing: -0.01em; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .info-cell .key { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; font-weight: 700; }
+    .info-cell .val { font-size: 0.9rem; font-weight: 700; }
 
-    /* ORDER ITEMS TABLE */
+    /* ITEMS TABLE */
     .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    .items-table thead th {
-      padding: 10px 12px; text-align: left;
-      font-size: 0.7rem; color: var(--text-muted); font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.07em;
-      border-bottom: 1px solid var(--border);
-    }
-    .items-table tbody td {
-      padding: 12px;
-      font-size: 0.875rem;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-weight: 500;
-    }
+    .items-table thead th { padding: 10px 12px; text-align: left; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; border-bottom: 1px solid var(--border); }
+    .items-table tbody td { padding: 12px; font-size: 0.875rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-weight: 500; }
     .items-table tbody tr:last-child td { border-bottom: none; }
     .item-name-cell { display: flex; align-items: center; gap: 10px; }
     .item-emoji { font-size: 1.3rem; }
@@ -95,130 +63,77 @@
     .subtotal-col { font-weight: 700; color: var(--primary); }
 
     /* TOTALS */
-    .totals-box {
-      background: var(--surface2);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-    .total-row {
-      display: flex; justify-content: space-between;
-      padding: 7px 0; font-size: 0.875rem; font-weight: 500;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
+    .totals-box { background: var(--surface2); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; }
+    .total-row { display: flex; justify-content: space-between; padding: 7px 0; font-size: 0.875rem; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .total-row:last-child { border-bottom: none; }
     .total-row .tl { color: var(--text-muted); }
-    .grand-total-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 18px; margin-top: 10px;
-      background: var(--primary-glow);
-      border: 1.5px solid var(--primary);
-      border-radius: var(--radius); font-weight: 800;
-    }
-    .grand-total-row .gt-label { font-size: 1rem; letter-spacing: -0.01em; }
+    .grand-total-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; margin-top: 10px; background: var(--primary-glow); border: 1.5px solid var(--primary); border-radius: var(--radius); font-weight: 800; }
+    .grand-total-row .gt-label { font-size: 1rem; }
     .grand-total-row .gt-amount { font-size: 1.4rem; color: var(--primary); font-family: 'JetBrains Mono', monospace; }
 
     /* PAYMENT INFO */
-    .payment-info {
-      display: flex; align-items: center; gap: 12px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 14px 18px;
-      margin-bottom: 20px; font-size: 0.875rem;
-    }
+    .payment-info { display: flex; align-items: center; gap: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 20px; font-size: 0.875rem; }
     .pi-icon { font-size: 1.5rem; }
     .pi-text .pi-method { font-weight: 700; }
     .pi-text .pi-ref { color: var(--text-muted); font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; }
 
-    /* QR SECTION */
+    /* QR SECTION — most important */
     .qr-section {
       display: flex; gap: 24px; align-items: flex-start;
       padding: 22px;
       background: var(--surface2);
-      border: 1.5px solid var(--border-bright);
+      border: 2px solid var(--primary);
       border-radius: var(--radius-lg);
       margin-bottom: 20px;
+      box-shadow: 0 0 24px var(--primary-glow);
       animation: glow-pulse 3s ease-in-out infinite;
     }
-    .qr-box {
-      background: white; border-radius: 12px;
-      padding: 12px; flex-shrink: 0;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.5);
-    }
+    .qr-box { background: white; border-radius: 12px; padding: 12px; flex-shrink: 0; box-shadow: 0 6px 24px rgba(0,0,0,0.5); }
     #qrCanvas { display: block; }
-    .qr-info h4 { font-size: 1rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .qr-info h4 { font-size: 1rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.02em; }
     .qr-info p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; font-weight: 500; }
-    .qr-order-id {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
-      color: var(--primary); background: var(--primary-glow);
-      padding: 5px 12px; border-radius: 6px; display: inline-block;
-      margin-top: 10px; border: 1px solid rgba(245,197,24,0.2);
-    }
-    .qr-scan-note {
-      font-size: 0.75rem; color: var(--text-dim);
-      margin-top: 10px; display: flex; align-items: center; gap: 6px; font-weight: 600;
-    }
+    .qr-order-id { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--primary); background: var(--primary-glow); padding: 5px 12px; border-radius: 6px; display: inline-block; margin-top: 10px; border: 1px solid rgba(245,197,24,0.2); }
+    .qr-url-note { font-size: 0.72rem; color: var(--text-dim); margin-top: 10px; font-weight: 600; word-break: break-all; line-height: 1.5; }
 
-    /* WHAT HAPPENS WHEN SCANNED */
-    .scan-instruction {
-      background: rgba(245,197,24,0.06);
-      border: 1px solid rgba(245,197,24,0.15);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      margin-bottom: 20px;
-      font-size: 0.85rem;
-    }
-    .scan-instruction h5 { font-weight: 800; margin-bottom: 8px; color: var(--primary); font-size: 0.9rem; }
-    .scan-steps { display: flex; flex-direction: column; gap: 6px; }
+    /* SCAN STEPS */
+    .scan-instruction { background: rgba(245,197,24,0.06); border: 1px solid rgba(245,197,24,0.15); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 20px; font-size: 0.85rem; }
+    .scan-instruction h5 { font-weight: 900; margin-bottom: 10px; color: var(--primary); font-size: 0.9rem; }
+    .scan-steps { display: flex; flex-direction: column; gap: 8px; }
     .scan-step { display: flex; align-items: flex-start; gap: 10px; color: var(--text-muted); font-weight: 500; }
-    .step-num {
-      width: 20px; height: 20px; border-radius: 50%;
-      background: var(--primary); color: #111;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.72rem; font-weight: 900; flex-shrink: 0; margin-top: 1px;
-    }
+    .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #111; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 900; flex-shrink: 0; margin-top: 1px; }
 
     /* FOOTER */
-    .bill-footer {
-      text-align: center; padding: 16px;
-      border-top: 1px solid var(--border);
-      font-size: 0.78rem; color: var(--text-dim); font-weight: 500;
-    }
+    .bill-footer { text-align: center; padding: 16px; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--text-dim); font-weight: 500; }
     .bill-footer strong { color: var(--primary); }
 
-    /* ACTION BUTTONS */
-    .bill-actions {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 12px; margin-bottom: 20px;
-    }
+    /* ACTIONS */
+    .bill-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
     .bill-actions-bottom { display: flex; justify-content: center; margin-bottom: 40px; }
 
     /* CONFETTI */
-    .confetti-piece {
-      position: fixed; top: -10px;
-      border-radius: 2px;
-      animation: confettiFall linear forwards;
-      pointer-events: none;
-    }
-    @keyframes confettiFall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-    }
+    .confetti-piece { position: fixed; top: -10px; border-radius: 2px; animation: confettiFall linear forwards; pointer-events: none; }
+    @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+    /* NO ORDER */
+    .no-order-state { text-align: center; padding: 80px 20px; }
+    .no-order-state .no-icon { font-size: 4rem; margin-bottom: 16px; display: block; }
+    .no-order-state h3 { font-size: 1.2rem; font-weight: 900; margin-bottom: 8px; }
+    .no-order-state p { color: var(--text-muted); font-weight: 500; }
 
     @media (max-width: 600px) {
       .bill-page { padding: 16px; }
-      .info-grid { grid-template-columns: 1fr; gap: 10px; }
+      .info-grid { grid-template-columns: 1fr; }
       .qr-section { flex-direction: column; align-items: center; text-align: center; }
       .bill-actions { grid-template-columns: 1fr; }
       .bill-strip { flex-direction: column; gap: 12px; text-align: center; }
       .bill-body { padding: 18px; }
     }
-
     @media print {
       body { background: white !important; color: black !important; }
-      .bill-print-card { border: 2px solid #ccc; }
       .bill-strip { background: #f5c518 !important; -webkit-print-color-adjust: exact; }
       .bill-actions, .success-banner, .bill-actions-bottom, nav, .scan-instruction { display: none !important; }
-      .totals-box, .payment-info, .qr-section { background: #f9f9f9 !important; border: 1px solid #ddd !important; }
+      .totals-box, .payment-info, .qr-section { background: #f9f9f9 !important; border: 1px solid #ddd !important; color: black !important; }
+      .qr-box { box-shadow: none !important; }
     }
   </style>
 </head>
@@ -232,118 +147,11 @@
   </div>
 </nav>
 
-<div class="bill-page">
-
-  <!-- SUCCESS -->
-  <div class="success-banner">
-    <span class="success-icon">✅</span>
-    <h2>Order Confirmed!</h2>
-    <p>Your order has been placed successfully. Show this QR at the reception counter.</p>
-  </div>
-
-  <!-- PRINTABLE BILL -->
-  <div class="bill-print-card" id="billCard">
-
-    <!-- TOP STRIP -->
-    <div class="bill-strip">
-      <div class="bill-strip-left">
-        <h2>🍽️ Campus Bites</h2>
-        <p>College Canteen Pre-Order System</p>
-      </div>
-      <div class="bill-logo">📋</div>
-    </div>
-
-    <hr class="dashed-div" />
-
-    <!-- BILL BODY -->
-    <div class="bill-body">
-
-      <!-- INFO GRID -->
-      <div class="info-grid" id="infoGrid">
-        <div class="info-cell"><div class="key">Order ID</div><div class="val" id="billOrderId">...</div></div>
-        <div class="info-cell"><div class="key">Date & Time</div><div class="val" id="billDateTime">...</div></div>
-        <div class="info-cell"><div class="key">Student Name</div><div class="val" id="billStudentName">...</div></div>
-        <div class="info-cell"><div class="key">Register No.</div><div class="val" id="billRegNo">...</div></div>
-        <div class="info-cell"><div class="key">Department</div><div class="val" id="billDept">...</div></div>
-        <div class="info-cell"><div class="key">Status</div><div class="val"><span class="status-chip status-confirmed">✅ Confirmed</span></div></div>
-      </div>
-
-      <!-- ITEMS TABLE -->
-      <table class="items-table" id="billItemsTable">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th class="td-center">Qty</th>
-            <th class="td-right">Price</th>
-            <th class="td-right">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody id="billItems">
-          <tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-muted);">Loading...</td></tr>
-        </tbody>
-      </table>
-
-      <!-- TOTALS -->
-      <div class="totals-box">
-        <div class="total-row"><span class="tl">Subtotal</span><span id="billSubtotal">₹0.00</span></div>
-        <div class="total-row"><span class="tl">GST (5%)</span><span id="billGst">₹0.00</span></div>
-        <div class="total-row"><span class="tl">Pickup Charge</span><span style="color:var(--green); font-weight:700;">FREE</span></div>
-      </div>
-      <div class="grand-total-row">
-        <span class="gt-label">💰 Grand Total</span>
-        <span class="gt-amount" id="billTotal">₹0.00</span>
-      </div>
-
-      <!-- PAYMENT INFO -->
-      <div class="payment-info" id="billPaymentInfo" style="margin-top:16px;">
-        <span class="pi-icon">💳</span>
-        <div class="pi-text">
-          <div class="pi-method" id="billPayMethod">—</div>
-          <div class="pi-ref" id="billPayRef">—</div>
-        </div>
-      </div>
-
-      <!-- QR SECTION -->
-      <div class="qr-section">
-        <div class="qr-box">
-          <div id="qrCanvas"></div>
-        </div>
-        <div class="qr-info">
-          <h4>📱 Scan at Reception</h4>
-          <p>Show this QR code to the reception counter. They will scan it to verify your payment and prepare your order.</p>
-          <div class="qr-order-id" id="qrOrderIdLabel">—</div>
-          <div class="qr-scan-note">
-            🔒 QR contains your complete order details
-          </div>
-        </div>
-      </div>
-
-      <!-- SCAN INSTRUCTIONS -->
-      <div class="scan-instruction">
-        <h5>📲 What happens when QR is scanned?</h5>
-        <div class="scan-steps">
-          <div class="scan-step"><div class="step-num">1</div><span>Reception scans your QR code using their device</span></div>
-          <div class="scan-step"><div class="step-num">2</div><span>Your complete bill & student details appear instantly</span></div>
-          <div class="scan-step"><div class="step-num">3</div><span>They verify payment reference and hand over your food</span></div>
-        </div>
-      </div>
-
-      <!-- FOOTER -->
-      <div class="bill-footer">
-        Thank you for ordering from <strong>Campus Bites</strong> 🍽️<br />
-        This is a computer-generated e-bill. No signature required.
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ACTION BUTTONS -->
-  <div class="bill-actions">
-    <button class="btn btn-outline" onclick="window.print()">🖨️ Print Bill</button>
-    <button class="btn btn-secondary" onclick="downloadBill()">⬇️ Save as PDF</button>
-  </div>
-  <div class="bill-actions-bottom">
-    <a href="menu.html" class="btn btn-primary btn-lg">🛒 Place New Order</a>
+<div class="bill-page" id="billPage">
+  <!-- Loading state -->
+  <div class="loading-screen" id="loadingState">
+    <div class="spinner"></div>
+    <p>Loading your bill...</p>
   </div>
 </div>
 
@@ -358,94 +166,197 @@
     document.getElementById('themeBtn').textContent = mode === 'light' ? '🌙' : '☀️';
     localStorage.setItem('cbTheme', mode);
   }
-  function toggleTheme() {
-    applyTheme((localStorage.getItem('cbTheme') || 'dark') === 'dark' ? 'light' : 'dark');
-  }
+  function toggleTheme() { applyTheme((localStorage.getItem('cbTheme') || 'dark') === 'dark' ? 'light' : 'dark'); }
   applyTheme(localStorage.getItem('cbTheme') || 'dark');
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const order = JSON.parse(localStorage.getItem('campusBitesCurrentOrder') || 'null');
+  // ── LOAD ORDER ──
+  window.addEventListener('DOMContentLoaded', async () => {
+    // 1. Check URL param: ?order=ORD123...  (from QR scan)
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderIdFromUrl = urlParams.get('order');
+
+    let order = null;
+
+    if (orderIdFromUrl) {
+      // Came from QR scan — fetch from server
+      try {
+        const res = await fetch(`${API}/api/orders/${encodeURIComponent(orderIdFromUrl)}`);
+        if (res.ok) {
+          order = await res.json();
+          // Also save to localStorage so it persists
+          localStorage.setItem('campusBitesCurrentOrder', JSON.stringify(order));
+        }
+      } catch (e) {
+        console.error('Failed to fetch order from server:', e);
+      }
+    }
+
+    // 2. Fallback: localStorage (came from payment page)
     if (!order) {
-      document.querySelector('.bill-page').innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">📄</div>
-          <h3>No Recent Order</h3>
-          <p>Please place an order first.</p>
-          <a href="menu.html" class="btn btn-primary" style="margin-top:16px;">Go to Menu</a>
+      order = JSON.parse(localStorage.getItem('campusBitesCurrentOrder') || 'null');
+    }
+
+    // 3. Nothing found
+    if (!order) {
+      document.getElementById('billPage').innerHTML = `
+        <div class="no-order-state">
+          <span class="no-icon">📄</span>
+          <h3>No Order Found</h3>
+          <p>Please place an order first, or scan a valid QR code.</p>
+          <a href="menu.html" class="btn btn-primary" style="margin-top:20px;">🛒 Go to Menu</a>
         </div>`;
       return;
     }
 
-    populateBill(order);
-    generateQR(order);
-    launchConfetti();
+    renderBill(order);
   });
 
-  function populateBill(order) {
+  function renderBill(order) {
+    const page = document.getElementById('billPage');
+
     const date = new Date(order.createdAt);
     const dateStr = date.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
     const timeStr = date.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
 
-    document.getElementById('billOrderId').textContent = order.orderId;
-    document.getElementById('billDateTime').textContent = `${dateStr}, ${timeStr}`;
-    document.getElementById('billStudentName').textContent = order.studentName;
-    document.getElementById('billRegNo').textContent = order.regNo;
-    document.getElementById('billDept').textContent = order.department;
-    document.getElementById('billSubtotal').textContent = `₹${parseFloat(order.subtotal).toFixed(2)}`;
-    document.getElementById('billGst').textContent = `₹${parseFloat(order.gst).toFixed(2)}`;
-    document.getElementById('billTotal').textContent = `₹${parseFloat(order.total).toFixed(2)}`;
-    document.getElementById('billPayMethod').textContent = `Paid via ${order.paymentMethod}`;
-    document.getElementById('billPayRef').textContent = `Ref: ${order.paymentRef}`;
-    document.getElementById('qrOrderIdLabel').textContent = order.orderId;
+    // ── Build scannable QR URL ──
+    // When someone scans this QR they go directly to bill.html?order=ORD...
+    const billUrl = `${window.location.origin}/bill.html?order=${encodeURIComponent(order.orderId)}`;
 
-    const tbody = document.getElementById('billItems');
-    tbody.innerHTML = order.items.map(item => `
-      <tr>
-        <td>
-          <div class="item-name-cell">
-            <span class="item-emoji">${item.emoji || '🍽️'}</span>
-            <span style="font-weight:600;">${item.name}</span>
+    page.innerHTML = `
+      <!-- SUCCESS -->
+      <div class="success-banner" id="successBanner">
+        <span class="success-icon">✅</span>
+        <h2>Order Confirmed!</h2>
+        <p>Show the QR code below at the reception counter to collect your food.</p>
+      </div>
+
+      <!-- PRINTABLE BILL -->
+      <div class="bill-print-card" id="billCard">
+
+        <div class="bill-strip">
+          <div class="bill-strip-left">
+            <h2>🍽️ Campus Bites</h2>
+            <p>College Canteen Pre-Order System</p>
           </div>
-        </td>
-        <td class="td-center">${item.qty}</td>
-        <td class="td-right">₹${parseFloat(item.price).toFixed(2)}</td>
-        <td class="td-right subtotal-col">₹${(parseFloat(item.price) * item.qty).toFixed(2)}</td>
-      </tr>`).join('');
+          <div class="bill-logo">📋</div>
+        </div>
+
+        <hr class="dashed-div" />
+
+        <div class="bill-body">
+
+          <div class="info-grid">
+            <div class="info-cell"><div class="key">Order ID</div><div class="val">${order.orderId}</div></div>
+            <div class="info-cell"><div class="key">Date & Time</div><div class="val">${dateStr}, ${timeStr}</div></div>
+            <div class="info-cell"><div class="key">Student Name</div><div class="val">${order.studentName}</div></div>
+            <div class="info-cell"><div class="key">Register No.</div><div class="val">${order.regNo}</div></div>
+            <div class="info-cell"><div class="key">Department</div><div class="val">${order.department}</div></div>
+            <div class="info-cell"><div class="key">Status</div><div class="val"><span class="status-chip status-confirmed">✅ ${order.status || 'Confirmed'}</span></div></div>
+          </div>
+
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th class="td-center">Qty</th>
+                <th class="td-right">Price</th>
+                <th class="td-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.items.map(item => `
+                <tr>
+                  <td><div class="item-name-cell"><span class="item-emoji">${item.emoji || '🍽️'}</span><span style="font-weight:600;">${item.name}</span></div></td>
+                  <td class="td-center">${item.qty}</td>
+                  <td class="td-right">₹${parseFloat(item.price).toFixed(2)}</td>
+                  <td class="td-right subtotal-col">₹${(parseFloat(item.price) * item.qty).toFixed(2)}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+
+          <div class="totals-box">
+            <div class="total-row"><span class="tl">Subtotal</span><span>₹${parseFloat(order.subtotal).toFixed(2)}</span></div>
+            <div class="total-row"><span class="tl">GST (5%)</span><span>₹${parseFloat(order.gst).toFixed(2)}</span></div>
+            <div class="total-row"><span class="tl">Pickup Charge</span><span style="color:var(--green);font-weight:700;">FREE</span></div>
+          </div>
+          <div class="grand-total-row">
+            <span class="gt-label">💰 Grand Total</span>
+            <span class="gt-amount">₹${parseFloat(order.total).toFixed(2)}</span>
+          </div>
+
+          <div class="payment-info" style="margin-top:16px;">
+            <span class="pi-icon">💳</span>
+            <div class="pi-text">
+              <div class="pi-method">Paid via ${order.paymentMethod}</div>
+              <div class="pi-ref">Ref: ${order.paymentRef}</div>
+            </div>
+          </div>
+
+          <!-- QR SECTION -->
+          <div class="qr-section">
+            <div class="qr-box">
+              <div id="qrCanvas"></div>
+            </div>
+            <div class="qr-info">
+              <h4>📱 Scan at Reception</h4>
+              <p>Reception scans this QR to instantly open your complete bill. No internet needed on their side — all data is in the QR.</p>
+              <div class="qr-order-id">${order.orderId}</div>
+              <div class="qr-url-note">🔗 ${billUrl}</div>
+            </div>
+          </div>
+
+          <!-- HOW IT WORKS -->
+          <div class="scan-instruction">
+            <h5>📲 How the QR works</h5>
+            <div class="scan-steps">
+              <div class="scan-step"><div class="step-num">1</div><span>Reception scans your QR with any camera / QR scanner app</span></div>
+              <div class="scan-step"><div class="step-num">2</div><span>Browser opens <strong>directly to this bill page</strong> with all your order details loaded</span></div>
+              <div class="scan-step"><div class="step-num">3</div><span>They verify payment reference and hand over your food 🎉</span></div>
+            </div>
+          </div>
+
+          <div class="bill-footer">
+            Thank you for ordering from <strong>Campus Bites</strong> 🍽️<br />
+            This is a computer-generated e-bill. No signature required.
+          </div>
+
+        </div>
+      </div>
+
+      <div class="bill-actions">
+        <button class="btn btn-outline" onclick="window.print()">🖨️ Print Bill</button>
+        <button class="btn btn-secondary" onclick="savePdf()">⬇️ Save as PDF</button>
+      </div>
+      <div class="bill-actions-bottom">
+        <a href="menu.html" class="btn btn-primary btn-lg">🛒 Place New Order</a>
+      </div>
+    `;
+
+    // Generate QR with the direct bill URL
+    generateQR(billUrl, order);
+    launchConfetti();
   }
 
-  function generateQR(order) {
-    // Encode full bill data so scanning it shows the complete bill
-    const billUrl = `${window.location.origin}/bill.html`;
-    const qrData = JSON.stringify({
-      orderId: order.orderId,
-      student: order.studentName,
-      regNo: order.regNo,
-      dept: order.department,
-      items: order.items.map(i => `${i.name} x${i.qty}`).join(', '),
-      total: `₹${parseFloat(order.total).toFixed(2)}`,
-      payment: order.paymentMethod,
-      ref: order.paymentRef,
-      time: order.createdAt,
-      viewBill: billUrl
-    });
-
-    document.getElementById('qrCanvas').innerHTML = '';
+  function generateQR(url, order) {
+    const el = document.getElementById('qrCanvas');
+    if (!el) return;
+    el.innerHTML = '';
     try {
-      new QRCode(document.getElementById('qrCanvas'), {
-        text: qrData,
-        width: 160, height: 160,
+      new QRCode(el, {
+        text: url,          // ← Real scannable URL directly to the bill page
+        width: 180,
+        height: 180,
         colorDark: '#000000',
         colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.M
+        correctLevel: QRCode.CorrectLevel.H   // High correction — more reliable scan
       });
     } catch(e) {
-      document.getElementById('qrCanvas').innerHTML =
-        '<div style="width:160px;height:160px;display:flex;align-items:center;justify-content:center;font-size:3rem;">📱</div>';
+      el.innerHTML = '<div style="width:180px;height:180px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:#fff;">📱</div>';
     }
   }
 
-  function downloadBill() {
-    showToast('Click Print → Choose "Save as PDF" as the printer.', 'info');
+  function savePdf() {
+    showToast('Click Print → choose "Save as PDF" as the printer.', 'info');
     setTimeout(() => window.print(), 800);
   }
 
