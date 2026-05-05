@@ -11,15 +11,40 @@
       display: flex; align-items: center; justify-content: center;
       padding: 24px;
       background: var(--bg);
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
+
+    /* Animated background */
     .profile-bg {
       position: absolute; inset: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 700px 500px at 20% 20%, rgba(255,107,53,0.07), transparent),
-        radial-gradient(ellipse 500px 400px at 80% 80%, rgba(139,92,246,0.07), transparent);
     }
+    .profile-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(245,197,24,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,197,24,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridDrift 25s linear infinite;
+    }
+    @keyframes gridDrift {
+      0% { transform: translate(0,0); }
+      100% { transform: translate(40px, 40px); }
+    }
+    .profile-bg::after {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,197,24,0.08) 0%, transparent 65%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      animation: orbPulse 6s ease-in-out infinite;
+    }
+    @keyframes orbPulse {
+      0%,100% { transform: translate(-50%,-50%) scale(1); opacity:0.7; }
+      50% { transform: translate(-50%,-50%) scale(1.2); opacity:1; }
+    }
+
     .profile-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -27,55 +52,86 @@
       padding: 44px;
       width: 100%; max-width: 520px;
       position: relative; z-index: 1;
-      animation: fadeInUp 0.5s ease;
+      animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
     }
+    .profile-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary));
+      background-size: 200% 100%;
+      animation: shimmer 2.5s linear infinite;
+    }
+
     .profile-header { text-align: center; margin-bottom: 36px; }
     .avatar-wrap {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #ff9a5e);
+      width: 84px; height: 84px; border-radius: 50%;
+      background: var(--primary);
       display: flex; align-items: center; justify-content: center;
-      font-size: 2.2rem; margin: 0 auto 16px;
-      box-shadow: 0 0 30px var(--primary-glow);
+      font-size: 2.4rem; margin: 0 auto 16px;
+      box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--primary), 0 0 32px var(--primary-glow);
+      animation: glow-pulse 3s ease-in-out infinite;
     }
     .avatar-img {
-      width: 80px; height: 80px; border-radius: 50%;
-      object-fit: cover; border: 3px solid var(--primary);
-      box-shadow: 0 0 30px var(--primary-glow);
+      width: 84px; height: 84px; border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--primary), 0 0 32px var(--primary-glow);
+      animation: glow-pulse 3s ease-in-out infinite;
     }
-    .profile-header h2 { font-size: 1.5rem; font-weight: 700; }
-    .profile-header p { color: var(--text-muted); font-size: 0.875rem; margin-top: 6px; }
+    .profile-header h2 { font-size: 1.55rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 6px; }
+    .profile-header p { color: var(--text-muted); font-size: 0.875rem; font-weight: 500; }
     .google-badge {
       display: inline-flex; align-items: center; gap: 6px;
       background: var(--surface2); border: 1px solid var(--border);
       border-radius: 50px; padding: 5px 14px;
       font-size: 0.78rem; color: var(--text-muted);
-      margin-top: 10px;
+      margin-top: 12px; font-weight: 600;
     }
-    .form-grid { display: flex; flex-direction: column; gap: 20px; }
-    .dept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .form-grid { display: flex; flex-direction: column; gap: 22px; }
+
+    /* DEPT CHIPS */
+    .dept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .dept-chip {
       padding: 10px 14px;
       background: var(--surface2);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: var(--radius-sm);
-      cursor: pointer; transition: var(--transition);
-      font-size: 0.8rem; font-weight: 500; text-align: center;
+      cursor: pointer; transition: var(--transition-bounce);
+      font-size: 0.82rem; font-weight: 700; text-align: center;
       color: var(--text-muted);
     }
-    .dept-chip:hover { border-color: var(--primary); color: var(--primary); }
+    .dept-chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
     .dept-chip.selected { border-color: var(--primary); background: var(--primary-glow); color: var(--primary); }
+
+    /* YEAR CHIPS */
     .year-row { display: flex; gap: 8px; }
     .year-chip {
       flex: 1; padding: 10px 8px;
-      background: var(--surface2); border: 1px solid var(--border);
+      background: var(--surface2); border: 1.5px solid var(--border);
       border-radius: var(--radius-sm); cursor: pointer;
-      font-size: 0.8rem; font-weight: 500; text-align: center;
-      color: var(--text-muted); transition: var(--transition);
+      font-size: 0.82rem; font-weight: 800; text-align: center;
+      color: var(--text-muted); transition: var(--transition-bounce);
     }
-    .year-chip:hover { border-color: var(--primary); color: var(--primary); }
-    .year-chip.selected { border-color: var(--primary); background: var(--primary-glow); color: var(--primary); }
+    .year-chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+    .year-chip.selected { border-color: var(--primary); background: var(--primary); color: #111; }
+
     .save-btn-wrap { margin-top: 8px; }
-    .required-note { font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-top: 12px; }
+    .save-btn-wrap .btn { animation: glow-pulse 3s ease-in-out infinite; }
+    .required-note { font-size: 0.73rem; color: var(--text-dim); text-align: center; margin-top: 12px; font-weight: 600; }
+
+    /* SAVED INDICATOR */
+    .already-saved-banner {
+      display: none;
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.2);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.82rem; color: var(--green);
+      text-align: center; font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .already-saved-banner.visible { display: block; animation: fadeInUp 0.3s ease; }
 
     @media (max-width: 480px) {
       .profile-card { padding: 28px 20px; }
@@ -84,18 +140,29 @@
   </style>
 </head>
 <body>
-<div class="profile-page">
+
+<!-- NAV -->
+<nav class="navbar" style="position:fixed; top:0; left:0; right:0; z-index:200;">
+  <a class="navbar-brand" href="menu.html"><span class="logo-icon">🍽️</span> Campus<span>Bites</span></a>
+  <div class="navbar-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
+  </div>
+</nav>
+
+<div class="profile-page" style="padding-top:90px;">
   <div class="profile-bg"></div>
 
   <div class="profile-card">
     <div class="profile-header">
       <div id="avatarWrap" class="avatar-wrap">🎓</div>
-      <h2>Complete Your Profile</h2>
-      <p>We need a few details so your orders are personalized</p>
+      <h2 id="profileTitle">Complete Your Profile</h2>
+      <p id="profileSubtitle">We need a few details so your orders are personalized</p>
       <div class="google-badge" id="loggedInBadge">
         <span>🔒</span> <span id="loggedInEmail">Loading...</span>
       </div>
     </div>
+
+    <div class="already-saved-banner" id="savedBanner">✅ Profile already saved — updating your details</div>
 
     <div class="form-grid">
       <div class="input-group">
@@ -126,7 +193,8 @@
           <div class="dept-chip" data-dept="BioTech" onclick="selectDept(this)">🧬 BioTech</div>
           <div class="dept-chip" data-dept="Other" onclick="selectDept(this)">🎓 Other</div>
         </div>
-        <input class="input" type="text" id="deptCustom" placeholder="Or type your department..." style="margin-top:8px;" oninput="clearDeptChip()" />
+        <input class="input" type="text" id="deptCustom" placeholder="Or type your department..."
+          style="margin-top:8px;" oninput="clearDeptChip()" />
       </div>
 
       <div class="input-group">
@@ -152,7 +220,7 @@
           💾 Save & Continue to Menu
         </button>
       </div>
-      <p class="required-note">* Required fields</p>
+      <p class="required-note">* Required fields · Your details are saved for all future orders</p>
     </div>
   </div>
 </div>
@@ -164,6 +232,17 @@
   let selectedDept = '';
   let selectedYear = '';
 
+  // ── THEME ──
+  function applyTheme(mode) {
+    document.body.classList.toggle('light-mode', mode === 'light');
+    document.getElementById('themeBtn').textContent = mode === 'light' ? '🌙' : '☀️';
+    localStorage.setItem('cbTheme', mode);
+  }
+  function toggleTheme() {
+    applyTheme((localStorage.getItem('cbTheme') || 'dark') === 'dark' ? 'light' : 'dark');
+  }
+  applyTheme(localStorage.getItem('cbTheme') || 'dark');
+
   window.addEventListener('DOMContentLoaded', async () => {
     const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
     if (!user) { window.location.href = 'index.html'; return; }
@@ -172,22 +251,30 @@
 
     if (user.googlePhoto) {
       const wrap = document.getElementById('avatarWrap');
-      wrap.outerHTML = `<img class="avatar-img" src="${user.googlePhoto}" alt="avatar" id="avatarWrap" />`;
+      const img = document.createElement('img');
+      img.src = user.googlePhoto;
+      img.alt = 'avatar';
+      img.id = 'avatarWrap';
+      img.className = 'avatar-img';
+      wrap.replaceWith(img);
     }
 
-    // Pre-fill if existing profile
+    // Pre-fill saved details
     try {
       const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email)}`);
       if (res.ok) {
         const p = await res.json();
-        if (p.studentName) document.getElementById('studentName').value = p.studentName;
+        if (p.studentName) {
+          document.getElementById('savedBanner').classList.add('visible');
+          document.getElementById('profileTitle').textContent = 'Update Your Profile';
+          document.getElementById('profileSubtitle').textContent = 'Your saved details are pre-filled below';
+          document.getElementById('studentName').value = p.studentName;
+        }
         if (p.regNo) document.getElementById('regNo').value = p.regNo;
         if (p.department) {
           const chip = document.querySelector(`.dept-chip[data-dept="${p.department}"]`);
-          if (chip) { selectDept(chip); } else {
-            document.getElementById('deptCustom').value = p.department;
-            selectedDept = p.department;
-          }
+          if (chip) { selectDept(chip); }
+          else { document.getElementById('deptCustom').value = p.department; selectedDept = p.department; }
         }
         if (p.year) {
           const yc = document.querySelector(`.year-chip[data-year="${p.year}"]`);
@@ -244,7 +331,7 @@
         })
       });
       if (!res.ok) throw new Error();
-      showToast('Profile saved! 🎉', 'success');
+      showToast('Profile saved! Redirecting... 🎉', 'success');
       setTimeout(() => window.location.href = 'menu.html', 900);
     } catch {
       showToast('Failed to save. Check if server is running.', 'error');

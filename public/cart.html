@@ -16,33 +16,34 @@
     }
     .back-btn {
       width: 42px; height: 42px; border-radius: 50%;
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       background: var(--surface);
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; text-decoration: none; color: var(--text);
-      font-size: 1.1rem; transition: var(--transition); flex-shrink: 0;
+      font-size: 1.1rem; transition: var(--transition-bounce); flex-shrink: 0;
     }
-    .back-btn:hover { border-color: var(--primary); color: var(--primary); }
-    .cart-head h1 { font-size: 1.5rem; font-weight: 700; }
-    .cart-head p { font-size: 0.85rem; color: var(--text-muted); }
+    .back-btn:hover { border-color: var(--primary); color: var(--primary); transform: scale(1.1); }
+    .cart-head h1 { font-size: 1.5rem; font-weight: 900; letter-spacing: -0.03em; }
+    .cart-head p { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
 
     /* STUDENT INFO */
     .student-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 18px 22px;
+      padding: 16px 22px;
       display: flex; align-items: center; gap: 14px;
       margin-bottom: 20px;
+      animation: fadeInUp 0.4s ease;
     }
     .student-icon {
       width: 46px; height: 46px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #ff9a5e);
+      background: var(--primary);
       display: flex; align-items: center; justify-content: center;
       font-size: 1.3rem; flex-shrink: 0;
     }
-    .student-info h4 { font-size: 0.95rem; font-weight: 600; }
-    .student-info p { font-size: 0.8rem; color: var(--text-muted); }
+    .student-info h4 { font-size: 0.95rem; font-weight: 800; letter-spacing: -0.01em; }
+    .student-info p { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
 
     /* CART ITEMS */
     .cart-items-card {
@@ -51,38 +52,40 @@
       border-radius: var(--radius-lg);
       overflow: hidden;
       margin-bottom: 20px;
+      animation: fadeInUp 0.4s ease 0.05s both;
     }
     .cart-items-header {
-      padding: 16px 20px;
+      padding: 16px 22px;
       border-bottom: 1px solid var(--border);
-      font-weight: 600; font-size: 0.95rem;
+      font-weight: 800; font-size: 0.95rem;
       display: flex; align-items: center; gap: 8px;
+      letter-spacing: -0.01em;
     }
     .cart-item {
       display: flex; align-items: center; gap: 14px;
-      padding: 16px 20px;
+      padding: 16px 22px;
       border-bottom: 1px solid rgba(255,255,255,0.04);
       transition: var(--transition);
     }
     .cart-item:last-child { border-bottom: none; }
     .cart-item:hover { background: var(--glass); }
-    .ci-emoji { font-size: 1.8rem; flex-shrink: 0; }
+    .ci-emoji { font-size: 2rem; flex-shrink: 0; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3)); }
     .ci-info { flex: 1; }
-    .ci-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
-    .ci-price { font-size: 0.8rem; color: var(--text-muted); }
+    .ci-name { font-size: 0.95rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.01em; }
+    .ci-price { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
     .ci-qty-control { display: flex; align-items: center; gap: 8px; }
     .ci-qty-btn {
-      width: 30px; height: 30px; border-radius: 50%;
-      border: 1px solid var(--border);
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1.5px solid var(--border);
       background: var(--surface2); color: var(--text);
-      cursor: pointer; font-size: 1rem; font-weight: 700;
+      cursor: pointer; font-size: 1rem; font-weight: 800;
       display: flex; align-items: center; justify-content: center;
-      transition: var(--transition);
+      transition: var(--transition-bounce); font-family: 'Space Grotesk', sans-serif;
     }
-    .ci-qty-btn:hover { background: var(--surface3); }
-    .ci-qty-btn.remove:hover { background: var(--red); border-color: var(--red); }
-    .ci-qty-num { font-size: 0.95rem; font-weight: 600; min-width: 22px; text-align: center; }
-    .ci-subtotal { font-size: 0.95rem; font-weight: 700; color: var(--primary); min-width: 70px; text-align: right; }
+    .ci-qty-btn:hover { background: var(--surface3); transform: scale(1.15); }
+    .ci-qty-btn.remove:hover { background: var(--red); border-color: var(--red); color: white; }
+    .ci-qty-num { font-size: 0.95rem; font-weight: 800; min-width: 22px; text-align: center; }
+    .ci-subtotal { font-size: 0.95rem; font-weight: 800; color: var(--primary); min-width: 70px; text-align: right; font-family: 'JetBrains Mono', monospace; }
 
     /* BILL SUMMARY */
     .bill-card {
@@ -91,35 +94,37 @@
       border-radius: var(--radius-lg);
       padding: 22px;
       margin-bottom: 20px;
+      animation: fadeInUp 0.4s ease 0.1s both;
     }
-    .bill-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; }
+    .bill-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.02em; }
     .bill-row {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-      font-size: 0.875rem;
+      padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 0.875rem; font-weight: 500;
     }
     .bill-row:last-child { border-bottom: none; }
     .bill-row.total {
-      padding-top: 14px; font-size: 1.1rem; font-weight: 700;
+      padding-top: 14px; font-size: 1.1rem; font-weight: 900;
       border-top: 2px solid var(--border);
     }
-    .bill-row.total .amount { color: var(--primary); font-size: 1.3rem; }
+    .bill-row.total .amount { color: var(--primary); font-size: 1.35rem; font-family: 'JetBrains Mono', monospace; }
     .bill-row .label { color: var(--text-muted); }
-    .bill-row .amount { font-weight: 600; }
+    .bill-row .amount { font-weight: 700; }
     .savings-note {
       background: var(--green-glow); border: 1px solid rgba(34,197,94,0.2);
-      border-radius: var(--radius-sm); padding: 8px 12px;
+      border-radius: var(--radius-sm); padding: 9px 14px;
       font-size: 0.8rem; color: var(--green); text-align: center;
-      margin-top: 14px;
+      margin-top: 14px; font-weight: 600;
     }
 
     /* EMPTY CART */
-    .empty-cart-wrap { padding: 60px 20px; text-align: center; }
-    .empty-cart-wrap .ec-icon { font-size: 4rem; margin-bottom: 16px; }
-    .empty-cart-wrap h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
-    .empty-cart-wrap p { color: var(--text-muted); margin-bottom: 24px; }
+    .empty-cart-wrap { padding: 70px 20px; text-align: center; }
+    .empty-cart-wrap .ec-icon { font-size: 4.5rem; margin-bottom: 16px; opacity: 0.5; animation: pulse 2s ease-in-out infinite; display: block; }
+    .empty-cart-wrap h2 { font-size: 1.3rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .empty-cart-wrap p { color: var(--text-muted); margin-bottom: 24px; font-weight: 500; }
 
     .proceed-btn-wrap { position: sticky; bottom: 0; background: var(--bg); padding: 16px 0 20px; }
+    .proceed-btn-wrap .btn { animation: glow-pulse 3s ease-in-out infinite; }
 
     @media (max-width: 600px) {
       .cart-page { padding: 16px; }
@@ -133,6 +138,7 @@
 <nav class="navbar">
   <a class="navbar-brand" href="menu.html"><span class="logo-icon">🍽️</span> Campus<span>Bites</span></a>
   <div class="navbar-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
     <a href="history.html" class="btn btn-ghost btn-sm">📋 Orders</a>
   </div>
 </nav>
@@ -160,6 +166,17 @@
   let cart = {};
   let userProfile = null;
 
+  // ── THEME ──
+  function applyTheme(mode) {
+    document.body.classList.toggle('light-mode', mode === 'light');
+    document.getElementById('themeBtn').textContent = mode === 'light' ? '🌙' : '☀️';
+    localStorage.setItem('cbTheme', mode);
+  }
+  function toggleTheme() {
+    applyTheme((localStorage.getItem('cbTheme') || 'dark') === 'dark' ? 'light' : 'dark');
+  }
+  applyTheme(localStorage.getItem('cbTheme') || 'dark');
+
   window.addEventListener('DOMContentLoaded', async () => {
     const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
     if (!user) { window.location.href = 'index.html'; return; }
@@ -185,7 +202,7 @@
     if (cartEntries.length === 0) {
       content.innerHTML = `
         <div class="empty-cart-wrap">
-          <div class="ec-icon">🛒</div>
+          <span class="ec-icon">🛒</span>
           <h2>Your cart is empty</h2>
           <p>Add some delicious items from our menu!</p>
           <a href="menu.html" class="btn btn-primary btn-lg">Browse Menu</a>
@@ -214,10 +231,9 @@
 
     content.innerHTML = `
       ${studentHTML}
-
       <div class="cart-items-card">
         <div class="cart-items-header">
-          🍽️ Order Items <span style="color:var(--text-muted); font-weight:400;">(${totalItems} items)</span>
+          🍽️ Order Items <span style="color:var(--text-muted); font-weight:500;">(${totalItems} items)</span>
         </div>
         ${cartItems.map(item => `
           <div class="cart-item" id="citem-${item.id}">
@@ -254,7 +270,7 @@
           <span class="amount">₹${total.toFixed(2)}</span>
         </div>
         <div class="savings-note">
-          🎓 Student discount: Free canteen pickup — No delivery charges!
+          🎓 Student perk: Free canteen pickup — No delivery charges!
         </div>
       </div>
 
@@ -265,17 +281,12 @@
       </div>`;
   }
 
-  function incItem(id) {
-    cart[id] = (cart[id] || 0) + 1;
-    saveCart(); renderCart();
-  }
-
+  function incItem(id) { cart[id] = (cart[id] || 0) + 1; saveCart(); renderCart(); }
   function decItem(id) {
     cart[id] = (cart[id] || 0) - 1;
     if (cart[id] <= 0) delete cart[id];
     saveCart(); renderCart();
   }
-
   function saveCart() { localStorage.setItem('campusBitesCart', JSON.stringify(cart)); }
 
   function proceedToPayment(subtotal, gst, total) {
@@ -284,10 +295,7 @@
       const item = allMenuItems.find(i => i.id === parseInt(id));
       return item ? { id: item.id, name: item.name, price: item.price, qty, subtotal: item.price*qty, emoji: item.emoji, veg: item.veg } : null;
     }).filter(Boolean);
-
-    localStorage.setItem('campusBitesPendingOrder', JSON.stringify({
-      items: cartItems, subtotal, gst, total
-    }));
+    localStorage.setItem('campusBitesPendingOrder', JSON.stringify({ items: cartItems, subtotal, gst, total }));
     window.location.href = 'payment.html';
   }
 

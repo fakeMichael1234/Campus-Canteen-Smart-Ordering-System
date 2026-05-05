@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
+    body { overflow: hidden; }
+    @media(max-width:768px){ body { overflow: auto; } }
+
     .login-page {
       min-height: 100vh;
       display: grid;
@@ -16,160 +19,216 @@
     @media (max-width: 768px) {
       .login-page { grid-template-columns: 1fr; }
       .login-hero { display: none; }
+      body { overflow: auto; }
     }
 
-    /* LEFT: HERO */
+    /* ── HERO ── */
     .login-hero {
       position: relative;
-      background: linear-gradient(160deg, #1a0a00 0%, #0a0a12 60%);
+      background: #0a0a0a;
       overflow: hidden;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      padding: 60px 40px;
+      padding: 60px 50px;
       text-align: center;
     }
-    .hero-bg-circles {
+    body.light-mode .login-hero { background: #f0ede4; }
+
+    /* Animated grid background */
+    .hero-grid {
       position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(245,197,24,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,197,24,0.04) 1px, transparent 1px);
+      background-size: 44px 44px;
+      animation: gridDrift 20s linear infinite;
     }
-    .hero-bg-circles span {
-      position: absolute; border-radius: 50%;
-      background: radial-gradient(circle, var(--primary-glow), transparent);
+    @keyframes gridDrift {
+      0% { transform: translate(0,0); }
+      100% { transform: translate(44px, 44px); }
     }
-    .hero-bg-circles span:nth-child(1) { width:400px; height:400px; top:-80px; left:-80px; opacity:0.5; }
-    .hero-bg-circles span:nth-child(2) { width:300px; height:300px; bottom:-60px; right:-60px; opacity:0.3; }
-    .hero-bg-circles span:nth-child(3) { width:200px; height:200px; top:50%; left:60%; opacity:0.2; background: radial-gradient(circle, rgba(139,92,246,0.3), transparent); }
 
-    .hero-emoji-wrap { position: relative; margin-bottom: 30px; }
-    .hero-emoji { font-size: 6.5rem; animation: floatBurger 4s ease-in-out infinite; line-height: 1; z-index: 2; position: relative; }
-    .hero-emoji-glow {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 140px; height: 140px; background: var(--primary);
-      filter: blur(60px); opacity: 0.4; border-radius: 50%; z-index: 1;
-      animation: pulseGlow 4s ease-in-out infinite;
+    .hero-glow-orb {
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,197,24,0.12) 0%, transparent 65%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      animation: orbPulse 5s ease-in-out infinite;
+      pointer-events: none;
     }
-    @keyframes floatBurger {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(5deg); }
+    @keyframes orbPulse {
+      0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
+      50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
     }
-    @keyframes pulseGlow {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-      50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.6; }
-    }
-    .hero-title { font-size: 3rem; font-weight: 900; line-height: 1; margin-bottom: 16px; letter-spacing: -0.02em; }
-    .hero-subtitle { color: var(--text-muted); font-size: 1.05rem; max-width: 380px; line-height: 1.6; font-weight: 400; }
 
-    .features-list { display: flex; flex-direction: column; gap: 12px; margin-top: 36px; text-align: left; }
+    .hero-content { position: relative; z-index: 2; }
+
+    .hero-emoji-wrap { position: relative; margin-bottom: 32px; display: inline-block; }
+    .hero-emoji {
+      font-size: 7rem; line-height: 1;
+      animation: floatFood 4s ease-in-out infinite;
+      display: block; filter: drop-shadow(0 0 30px rgba(245,197,24,0.4));
+    }
+    @keyframes floatFood {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-18px) rotate(3deg); }
+    }
+
+    .hero-title {
+      font-size: 3.6rem; font-weight: 900;
+      line-height: 1; margin-bottom: 16px;
+      letter-spacing: -0.04em;
+    }
+    .hero-subtitle {
+      color: var(--text-muted); font-size: 1rem;
+      max-width: 360px; line-height: 1.65; font-weight: 500;
+      margin: 0 auto 36px;
+    }
+
+    .features-list { display: flex; flex-direction: column; gap: 10px; text-align: left; }
     .feature-item {
       display: flex; align-items: center; gap: 12px;
-      background: var(--glass); backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
+      background: rgba(245,197,24,0.04);
+      border: 1px solid rgba(245,197,24,0.12);
       border-radius: var(--radius); padding: 12px 16px;
-      font-size: 0.875rem;
+      font-size: 0.875rem; font-weight: 500;
+      animation: fadeInUp 0.6s ease both;
     }
-    .feature-item .fi { font-size: 1.4rem; }
+    .feature-item:nth-child(1) { animation-delay: 0.1s; }
+    .feature-item:nth-child(2) { animation-delay: 0.2s; }
+    .feature-item:nth-child(3) { animation-delay: 0.3s; }
+    .feature-item:nth-child(4) { animation-delay: 0.4s; }
+    .feature-item .fi { font-size: 1.3rem; }
 
-    /* RIGHT: LOGIN PANEL */
+    /* ── LOGIN PANEL ── */
     .login-panel {
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       padding: 60px 40px;
       background: var(--bg);
+      position: relative;
     }
-    .login-box {
-      width: 100%; max-width: 400px;
+    .login-box { width: 100%; max-width: 400px; }
+
+    .top-bar {
+      position: absolute; top: 20px; right: 20px;
+      display: flex; gap: 10px;
     }
+
     .login-logo {
       display: flex; align-items: center; gap: 10px;
-      font-size: 1.5rem; font-weight: 800;
-      margin-bottom: 8px;
+      font-size: 1.55rem; font-weight: 900;
+      margin-bottom: 6px; letter-spacing: -0.03em;
     }
-    .login-logo .lgi { font-size: 2rem; }
-    .login-tagline { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 40px; }
+    .login-logo .lgi { font-size: 2.2rem; }
+    .login-tagline { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 40px; font-weight: 500; }
 
     .login-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
       padding: 36px;
+      animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative; overflow: hidden;
     }
-    .success-icon { 
-      font-size: 4rem; margin-bottom: 15px; 
-      animation: checkPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    .login-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary));
+      background-size: 200% 100%;
+      animation: shimmer 2.5s linear infinite;
     }
-    @keyframes checkPop {
-      0% { transform: scale(0); opacity: 0; }
-      80% { transform: scale(1.2); }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .success-banner h2 { font-size: 1.6rem; font-weight: 800; color: var(--green); letter-spacing: -0.01em; }
-    .success-banner p { color: var(--text-muted); font-size: 0.95rem; margin-top: 6px; }
 
-    /* Google Button */
-    .btn-google {
-      display: flex; align-items: center; gap: 12px;
-      padding: 14px 24px; border-radius: 12px;
-      background: white; color: #1a1a1a;
-      border: none; cursor: pointer; width: 100%;
-      font-family: 'Poppins', sans-serif;
-      font-size: 0.95rem; font-weight: 600;
-      transition: var(--transition);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    .login-card h2 {
+      font-size: 1.6rem; font-weight: 900;
+      letter-spacing: -0.03em; margin-bottom: 6px;
     }
-    .btn-google:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-    .btn-google svg { width: 22px; height: 22px; flex-shrink: 0; }
-    .btn-google span { flex: 1; text-align: center; }
+    .login-card > p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px; font-weight: 500; }
 
-    /* Demo Login */
-    .btn-demo {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      width: 100%; padding: 13px;
-      background: var(--surface2);
-      border: 1px dashed var(--border);
-      border-radius: 12px; cursor: pointer;
-      color: var(--text-muted); font-size: 0.875rem; font-weight: 500;
-      font-family: 'Poppins', sans-serif;
-      transition: var(--transition);
+    /* Saved user banner */
+    .saved-user-banner {
+      display: none;
+      background: rgba(245,197,24,0.08);
+      border: 1px solid rgba(245,197,24,0.2);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      gap: 12px; align-items: center;
     }
-    .btn-demo:hover { border-color: var(--primary); color: var(--primary); }
+    .saved-user-banner.visible { display: flex; animation: fadeInUp 0.4s ease; }
+    .sub-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--primary-glow); border: 2px solid var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0; overflow: hidden;
+    }
+    .sub-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .sub-info { flex: 1; }
+    .sub-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; }
+    .sub-email { font-size: 0.75rem; color: var(--text-muted); }
+    .btn-continue {
+      background: var(--primary); color: #111;
+      border: none; border-radius: 50px;
+      padding: 8px 18px; font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem; font-weight: 800;
+      cursor: pointer; transition: var(--transition-bounce);
+      white-space: nowrap;
+    }
+    .btn-continue:hover { transform: scale(1.05); background: var(--primary-light); }
+
+    /* Divider */
+    .or-divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 20px 0; color: var(--text-dim); font-size: 0.8rem;
+    }
+    .or-divider::before, .or-divider::after {
+      content:''; flex:1; height:1px; background: var(--border);
+    }
 
     .login-note {
-      font-size: 0.75rem; color: var(--text-dim);
-      text-align: center; margin-top: 20px; line-height: 1.6;
+      font-size: 0.73rem; color: var(--text-dim);
+      text-align: center; margin-top: 18px; line-height: 1.6;
     }
     .login-note a { color: var(--primary); text-decoration: none; }
 
-    /* Demo modal fields */
-    .demo-form { display: flex; flex-direction: column; gap: 16px; }
+    /* Google button override */
+    .g-signin-wrap {
+      display: flex; justify-content: center;
+    }
   </style>
 </head>
 <body>
 
 <div class="login-page">
-  <!-- HERO SECTION -->
+  <!-- HERO -->
   <div class="login-hero">
-    <div class="hero-bg-circles">
-      <span></span><span></span><span></span>
-    </div>
-    <div class="hero-emoji-wrap">
-      <div class="hero-emoji">🍔</div>
-      <div class="hero-emoji-glow"></div>
-    </div>
-    <h1 class="hero-title">
-      <span class="gradient-text">Campus</span><br>Bites
-    </h1>
-    <p class="hero-subtitle">
-      Pre-order your meals, skip the queue & enjoy hot food — the smart way to eat at college.
-    </p>
-    <div class="features-list">
-      <div class="feature-item"><span class="fi">🛒</span> Browse full canteen menu online</div>
-      <div class="feature-item"><span class="fi">🥦</span> Veg-only mode for easy filtering</div>
-      <div class="feature-item"><span class="fi">💳</span> Pay via UPI or card instantly</div>
-      <div class="feature-item"><span class="fi">📱</span> Get QR-coded e-bill at reception</div>
+    <div class="hero-grid"></div>
+    <div class="hero-glow-orb"></div>
+    <div class="hero-content">
+      <div class="hero-emoji-wrap">
+        <span class="hero-emoji">🍔</span>
+      </div>
+      <h1 class="hero-title">
+        <span class="gradient-text">Campus</span><br>Bites
+      </h1>
+      <p class="hero-subtitle">
+        Pre-order your meals, skip the queue & enjoy hot food — the smart way to eat at college.
+      </p>
+      <div class="features-list">
+        <div class="feature-item"><span class="fi">🛒</span> Browse full canteen menu online</div>
+        <div class="feature-item"><span class="fi">🥦</span> Veg-only mode for easy filtering</div>
+        <div class="feature-item"><span class="fi">💳</span> Pay via UPI or card instantly</div>
+        <div class="feature-item"><span class="fi">📱</span> Get QR-coded e-bill at reception</div>
+      </div>
     </div>
   </div>
 
   <!-- LOGIN PANEL -->
   <div class="login-panel">
+    <div class="top-bar">
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
+    </div>
     <div class="login-box fade-in">
       <div class="login-logo">
         <span class="lgi">🍽️</span>
@@ -181,63 +240,96 @@
         <h2>Welcome Back 👋</h2>
         <p>Sign in to order your favourite meals</p>
 
+        <!-- Saved user quick-continue -->
+        <div class="saved-user-banner" id="savedUserBanner">
+          <div class="sub-avatar" id="subAvatar">?</div>
+          <div class="sub-info">
+            <div class="sub-name" id="subName">—</div>
+            <div class="sub-email" id="subEmail">—</div>
+          </div>
+          <button class="btn-continue" onclick="continueAsUser()">Continue →</button>
+        </div>
+
+        <div id="orDivider" class="or-divider" style="display:none;">or sign in with</div>
+
+        <!-- Google Sign-In -->
         <div id="g_id_onload"
              data-client_id="527171680624-bi73eakcr6ksqlos3p4o970pbcg446k6.apps.googleusercontent.com"
              data-context="signin"
              data-ux_mode="popup"
              data-callback="handleCredentialResponse"
-             data-auto_prompt="true"
-             data-auto_select="true">
+             data-auto_prompt="false"
+             data-auto_select="false">
         </div>
-        <div class="g_id_signin"
-             data-type="standard"
-             data-shape="rectangular"
-             data-theme="outline"
-             data-text="signin_with"
-             data-size="large"
-             data-logo_alignment="left"
-             style="display: flex; justify-content: center;">
+        <div class="g-signin-wrap">
+          <div class="g_id_signin"
+               data-type="standard"
+               data-shape="pill"
+               data-theme="outline"
+               data-text="signin_with"
+               data-size="large"
+               data-logo_alignment="left">
+          </div>
         </div>
 
         <p class="login-note">
           By signing in, you agree to our terms of service.<br>
-          Experience the fastest way to order food at your college canteen.
+          Your details are saved automatically for future orders.
         </p>
       </div>
     </div>
   </div>
 </div>
 
-
-<!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-  const API = '';
+  // ── THEME ──
+  function applyTheme(mode) {
+    document.body.classList.toggle('light-mode', mode === 'light');
+    document.getElementById('themeBtn').textContent = mode === 'light' ? '🌙' : '☀️';
+    localStorage.setItem('cbTheme', mode);
+  }
+  function toggleTheme() {
+    const cur = localStorage.getItem('cbTheme') || 'dark';
+    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  }
+  // Apply on load
+  applyTheme(localStorage.getItem('cbTheme') || 'dark');
 
-  // Check if already logged in
+  // ── SAVED USER CHECK ──
   window.addEventListener('DOMContentLoaded', () => {
     const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
-    if (user) redirectAfterLogin(user);
+    if (user) {
+      // Show saved banner
+      const banner = document.getElementById('savedUserBanner');
+      banner.classList.add('visible');
+      document.getElementById('subName').textContent = user.googleName || 'Student';
+      document.getElementById('subEmail').textContent = user.email || '';
+      const avatar = document.getElementById('subAvatar');
+      if (user.googlePhoto) {
+        avatar.innerHTML = `<img src="${user.googlePhoto}" alt="avatar" />`;
+      } else {
+        avatar.textContent = (user.googleName || 'S')[0].toUpperCase();
+      }
+      document.getElementById('orDivider').style.display = 'flex';
+    }
   });
 
-  async function redirectAfterLogin(user) {
-    // If we have a user in localStorage, let them into the menu immediately
-    // but check for profile completion in the background or during first fetch
+  function continueAsUser() {
     window.location.href = 'menu.html';
   }
-  function parseJwt (token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
+
+  function parseJwt(token) {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(atob(base64).split('').map(c =>
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    ).join('')));
   }
 
   async function handleCredentialResponse(response) {
     const payload = parseJwt(response.credential);
-    
+
     const user = {
       googleId: payload.sub,
       googleName: payload.name,
@@ -246,11 +338,12 @@
       loginTime: new Date().toISOString()
     };
 
+    // Save FOREVER in localStorage
     localStorage.setItem('campusBitesUser', JSON.stringify(user));
 
-    // Save to backend
+    // Also save to backend silently
     try {
-      await fetch(`${API}/api/users`, {
+      await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: payload.email, googleId: payload.sub, googleName: payload.name, googlePhoto: payload.picture })
@@ -258,11 +351,9 @@
     } catch {}
 
     showToast('Welcome, ' + payload.name + '! 🎉', 'success');
-    setTimeout(() => redirectAfterLogin(user), 1000);
+    setTimeout(() => window.location.href = 'menu.html', 1000);
   }
 
-
-  // Toast helper
   function showToast(msg, type = 'info') {
     const c = document.getElementById('toastContainer');
     const t = document.createElement('div');
@@ -271,6 +362,21 @@
     c.appendChild(t);
     setTimeout(() => t.remove(), 3500);
   }
+
+  // ── RIPPLE ──
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn, .btn-continue');
+    if (!btn) return;
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.style.width = r.style.height = size + 'px';
+    r.style.left = (e.clientX - rect.left - size/2) + 'px';
+    r.style.top  = (e.clientY - rect.top  - size/2) + 'px';
+    btn.appendChild(r);
+    setTimeout(() => r.remove(), 600);
+  });
 
 </script>
 </body>

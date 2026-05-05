@@ -11,34 +11,39 @@
     /* NAVBAR */
     .menu-nav {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(10,10,18,0.9);
-      backdrop-filter: blur(20px);
+      background: rgba(8,8,8,0.92);
+      backdrop-filter: blur(24px);
       border-bottom: 1px solid var(--border);
       padding: 0 24px;
+      transition: background 0.3s;
     }
+    body.light-mode .menu-nav { background: rgba(248,246,240,0.92); }
+
     .menu-nav-top {
       display: flex; align-items: center; justify-content: space-between;
-      height: 64px;
+      height: 66px;
     }
-    .brand { display:flex; align-items:center; gap:8px; font-size:1.2rem; font-weight:800; text-decoration:none; color:var(--text); }
+    .brand { display:flex; align-items:center; gap:8px; font-size:1.25rem; font-weight:900; text-decoration:none; color:var(--text); letter-spacing:-0.03em; }
     .brand span { color: var(--primary); }
 
-    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
     .nav-user { display:flex; align-items:center; gap:9px; }
     .nav-avatar {
       width: 36px; height: 36px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), #ff9a5e);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
       display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; font-weight: 700; color: white;
+      font-size: 0.9rem; font-weight: 800; color: #111;
       border: 2px solid var(--primary); cursor: pointer; text-decoration: none;
-      flex-shrink: 0;
+      flex-shrink: 0; transition: var(--transition);
+      box-shadow: 0 0 0 0 var(--primary-glow);
     }
+    .nav-avatar:hover { box-shadow: 0 0 0 4px var(--primary-glow); transform: scale(1.08); }
     .nav-avatar img { width:100%; height:100%; border-radius:50%; object-fit:cover; }
     .nav-user-info { text-align: right; }
-    .nav-user-name { font-size: 0.85rem; font-weight: 600; }
-    .nav-user-dept { font-size: 0.72rem; color: var(--text-muted); }
-    .nav-history-btn { display:flex; align-items:center; gap:5px; font-size:0.82rem; color:var(--text-muted); text-decoration:none; transition:var(--transition); }
-    .nav-history-btn:hover { color:var(--primary); }
+    .nav-user-name { font-size: 0.85rem; font-weight: 700; letter-spacing: -0.01em; }
+    .nav-user-dept { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
+    .nav-btn { display:flex; align-items:center; gap:5px; font-size:0.82rem; color:var(--text-muted); text-decoration:none; transition:var(--transition); font-weight:600; }
+    .nav-btn:hover { color:var(--primary); }
     .nav-logout { background:none; border:none; cursor:pointer; color:var(--text-dim); font-size:1rem; transition:var(--transition); }
     .nav-logout:hover { color:var(--red); }
 
@@ -54,12 +59,12 @@
     .veg-toggle-wrap {
       display: flex; align-items: center; gap: 8px;
       background: var(--surface2);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: 50px; padding: 8px 16px;
       cursor: pointer; transition: var(--transition);
-      white-space: nowrap;
+      white-space: nowrap; font-weight: 600; font-size: 0.85rem;
     }
-    .veg-toggle-wrap.active { border-color: var(--green); background: var(--green-glow); }
+    .veg-toggle-wrap.active { border-color: var(--green); background: var(--green-glow); color: var(--green); }
 
     /* CATEGORY TABS */
     .cat-tabs-wrap { padding: 0 24px 12px; }
@@ -69,7 +74,7 @@
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      gap: 18px;
       margin-top: 16px;
     }
 
@@ -82,63 +87,66 @@
       display: flex; flex-direction: column;
       transition: var(--transition);
       position: relative; overflow: hidden;
+      animation: fadeInUp 0.4s ease both;
     }
-    .menu-card:hover { border-color: var(--border-hover); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .menu-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--primary);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .menu-card:hover { border-color: var(--border-bright); transform: translateY(-5px); box-shadow: 0 12px 36px rgba(245,197,24,0.1); }
+    .menu-card:hover::after { transform: scaleX(1); }
 
     .food-card-veg-badge {
       position: absolute; top: 12px; right: 12px;
-      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-      padding: 4px; border-radius: 4px;
-      z-index: 2;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
+      padding: 4px; border-radius: 4px; z-index: 2;
     }
+    .food-emoji-big { font-size: 2.8rem; margin-bottom: 10px; line-height: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
 
-    .food-info { padding: 0; margin-top: 10px; }
-    .food-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-    .food-name {
-      font-size: 1.05rem; font-weight: 700;
-    }
-    .food-price { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
-    .food-category { font-size: 0.65rem; color: var(--text-dim); background: var(--surface3); padding: 2px 8px; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.05em; }
-
-    /* QTY CONTROL IN CARD */
-    .qty-area { margin-top: 12px; }
+    .food-info { padding: 0; }
+    .food-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; gap: 8px; }
+    .food-name { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+    .food-price { font-size: 1.1rem; font-weight: 900; color: var(--primary); white-space: nowrap; }
+    .food-category { font-size: 0.65rem; color: var(--text-dim); background: var(--surface3); padding: 2px 8px; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; display: inline-block; margin-bottom: 10px; }
 
     /* QTY CONTROL */
-    .qty-control { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .qty-control { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .qty-btn {
-      width: 32px; height: 32px; border-radius: 50%;
-      border: none; cursor: pointer; font-size: 1.1rem; font-weight: 700;
+      width: 34px; height: 34px; border-radius: 50%;
+      border: none; cursor: pointer; font-size: 1.1rem; font-weight: 900;
       display: flex; align-items: center; justify-content: center;
-      transition: var(--transition);
-      font-family: 'Poppins', sans-serif;
+      transition: var(--transition-bounce);
+      font-family: 'Space Grotesk', sans-serif;
     }
     .qty-btn.minus { background: var(--surface3); color: var(--text); }
-    .qty-btn.minus:hover { background: var(--red); color: white; }
-    .qty-btn.plus { background: var(--primary); color: white; }
-    .qty-btn.plus:hover { background: var(--primary-dark); }
-    .qty-num { font-size: 1rem; font-weight: 700; min-width: 20px; text-align: center; }
+    .qty-btn.minus:hover { background: var(--red); color: white; transform: scale(1.15); }
+    .qty-btn.plus { background: var(--primary); color: #111; }
+    .qty-btn.plus:hover { background: var(--primary-light); transform: scale(1.15); }
+    .qty-num { font-size: 1.05rem; font-weight: 800; min-width: 22px; text-align: center; color: var(--text); }
 
     .add-btn {
-      background: none;
-      border: 2px solid var(--primary);
-      color: var(--primary);
+      background: var(--primary);
+      border: none; color: #111;
       border-radius: 50px;
-      padding: 7px 18px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; transition: var(--transition);
-      flex-shrink: 0;
+      padding: 8px 20px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem; font-weight: 800;
+      cursor: pointer; transition: var(--transition-bounce);
+      letter-spacing: 0.02em;
     }
-    .add-btn:hover { background: var(--primary); color: white; }
+    .add-btn:hover { background: var(--primary-light); transform: translateY(-2px) scale(1.03); box-shadow: 0 6px 16px var(--primary-glow); }
 
     /* SECTION HEADER */
     .section-header {
       display: flex; align-items: center; gap: 10px;
-      margin-bottom: 4px; padding-top: 24px;
+      margin-bottom: 4px; padding-top: 28px;
     }
-    .section-header h3 { font-size: 1.1rem; font-weight: 700; }
-    .section-header .count { color: var(--text-muted); font-size: 0.85rem; }
-    .section-divider { height: 2px; background: linear-gradient(to right, var(--primary), transparent); border-radius: 1px; margin-bottom: 16px; }
+    .section-header h3 { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; }
+    .section-header .count { color: var(--text-muted); font-size: 0.82rem; font-weight: 600; }
+    .section-divider { height: 2px; background: linear-gradient(to right, var(--primary), transparent); border-radius: 2px; margin-bottom: 16px; }
 
     /* NO RESULTS */
     .no-results {
@@ -146,6 +154,28 @@
       text-align: center; padding: 60px; color: var(--text-muted);
     }
     .no-results .nr-icon { font-size: 3rem; margin-bottom: 12px; }
+
+    /* CART BAR (yellow) */
+    #cartBarContainer {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--primary);
+      color: #111; padding: 16px 28px;
+      z-index: 9999;
+      align-items: center; justify-content: space-between;
+      box-shadow: 0 -6px 32px rgba(245,197,24,0.35);
+    }
+    #cartBarContainer .cb-left { font-weight: 800; font-size: 1.05rem; }
+    #cartBarContainer .cb-btn {
+      background: #111; color: var(--primary);
+      padding: 10px 26px; border-radius: 50px;
+      font-weight: 900; text-decoration: none;
+      font-size: 0.9rem; font-family: 'Space Grotesk', sans-serif;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: var(--transition-bounce);
+      letter-spacing: 0.03em;
+    }
+    #cartBarContainer .cb-btn:hover { transform: scale(1.04); background: #1a1a1a; }
 
     @media (max-width: 768px) {
       .menu-nav { padding: 0 16px; }
@@ -162,8 +192,9 @@
 <nav class="menu-nav">
   <div class="menu-nav-top">
     <a class="brand" href="menu.html">🍽️ Campus<span>Bites</span></a>
-      <a class="nav-history-btn" href="cart.html" id="navCartBtn" style="display:none;">🛒 <span id="navCartCount">0</span></a>
-      <a class="nav-history-btn" href="history.html">📋 Orders</a>
+    <div class="nav-right">
+      <a class="nav-btn" href="history.html">📋 Orders</a>
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
       <div class="nav-user">
         <div class="nav-user-info">
           <div class="nav-user-name" id="navNameDisplay">Loading...</div>
@@ -198,8 +229,8 @@
     <button class="tab-btn" data-cat="Rice" onclick="selectCat(this)">🍚 Rice</button>
     <button class="tab-btn" data-cat="Biriyani" onclick="selectCat(this)">🍲 Biriyani</button>
     <button class="tab-btn" data-cat="Noodles" onclick="selectCat(this)">🍜 Noodles</button>
-    <button class="tab-btn" data-cat="Snacks" onclick="selectCat(this)">🥦 Snacks</button>
-    <button class="tab-btn" data-cat="Special" onclick="selectCat(this)">🥙 Special</button>
+    <button class="tab-btn" data-cat="Snacks" onclick="selectCat(this)">🥨 Snacks</button>
+    <button class="tab-btn" data-cat="Special" onclick="selectCat(this)">⭐ Special</button>
     <button class="tab-btn" data-cat="Grill" onclick="selectCat(this)">🍖 Grill</button>
   </div>
 </div>
@@ -212,14 +243,10 @@
   </div>
 </div>
 
-<!-- THE CHECKOUT BAR (Reliable & Fixed) -->
-<div id="cartBarContainer" style="display:none; position:fixed; bottom:0; left:0; right:0; background:#ff6b35; color:white; padding:18px; z-index:9999; display:flex; align-items:center; justify-content:space-between; box-shadow:0 -5px 20px rgba(0,0,0,0.4);">
-    <div style="font-weight:700; font-size:1.1rem;">
-      🛒 <span id="cartCountPill">0</span> Items in Cart
-    </div>
-    <a href="cart.html" style="background:white; color:#ff6b35; padding:10px 24px; border-radius:50px; font-weight:800; text-decoration:none; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-      PROCEED TO PAYMENT →
-    </a>
+<!-- CART BAR -->
+<div id="cartBarContainer">
+  <div class="cb-left">🛒 <span id="cartCountPill">0</span> Items in Cart</div>
+  <a href="cart.html" class="cb-btn">PROCEED TO PAYMENT →</a>
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
@@ -232,15 +259,23 @@
   let selectedCategory = 'All';
   let userProfile = null;
 
+  // ── THEME ──
+  function applyTheme(mode) {
+    document.body.classList.toggle('light-mode', mode === 'light');
+    document.getElementById('themeBtn').textContent = mode === 'light' ? '🌙' : '☀️';
+    localStorage.setItem('cbTheme', mode);
+  }
+  function toggleTheme() {
+    applyTheme((localStorage.getItem('cbTheme') || 'dark') === 'dark' ? 'light' : 'dark');
+  }
+  applyTheme(localStorage.getItem('cbTheme') || 'dark');
+
   window.addEventListener('DOMContentLoaded', async () => {
-    // Auth check
     const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
     if (!user) { window.location.href = 'index.html'; return; }
 
-    // Load cart from localStorage
     cart = JSON.parse(localStorage.getItem('campusBitesCart') || '{}');
 
-    // Load user profile
     try {
       const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email)}`);
       if (res.ok) {
@@ -248,16 +283,12 @@
         if (!userProfile.studentName) { window.location.href = 'profile.html'; return; }
         setNavUser(userProfile, user);
       } else {
-        // Continue but with default
-        const name = user.googleName || 'Student';
-        document.getElementById('navNameDisplay').textContent = name;
+        document.getElementById('navNameDisplay').textContent = user.googleName || 'Student';
       }
     } catch {
-      const name = user.googleName || 'Student';
-      document.getElementById('navNameDisplay').textContent = name;
+      document.getElementById('navNameDisplay').textContent = user.googleName || 'Student';
     }
 
-    // Load menu
     try {
       const res = await fetch(`${API}/api/menu`);
       allMenuItems = await res.json();
@@ -272,26 +303,18 @@
 
   function setNavUser(profile, user) {
     document.getElementById('navNameDisplay').textContent = profile.studentName || user.googleName;
-    document.getElementById('navDeptDisplay').textContent = `${profile.department || ''} ${profile.year ? '· ' + profile.year + ' Year' : ''}`;
-    const init = (profile.studentName || user.googleName || 'S')[0].toUpperCase();
+    document.getElementById('navDeptDisplay').textContent = `${profile.department || ''} ${profile.year ? '· ' + profile.year + ' Yr' : ''}`;
     if (user.googlePhoto) {
-      document.getElementById('navAvatarLink').innerHTML = `<img src="${user.googlePhoto}" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+      document.getElementById('navAvatarLink').innerHTML = `<img src="${user.googlePhoto}" alt="avatar" />`;
     } else {
-      document.getElementById('navAvatarInitial').textContent = init;
+      document.getElementById('navAvatarInitial').textContent = (profile.studentName || user.googleName || 'S')[0].toUpperCase();
     }
   }
 
   function toggleVeg() {
     vegOnly = !vegOnly;
-    const wrap = document.getElementById('vegToggleWrap');
-    const label = document.getElementById('vegLabel');
-    if (vegOnly) {
-      wrap.classList.add('active');
-      label.textContent = '🟢 Veg Only';
-    } else {
-      wrap.classList.remove('active');
-      label.textContent = 'Veg Only';
-    }
+    document.getElementById('vegToggleWrap').classList.toggle('active', vegOnly);
+    document.getElementById('vegLabel').textContent = vegOnly ? '🟢 Veg Only' : 'Veg Only';
     renderMenu();
   }
 
@@ -314,18 +337,12 @@
     });
 
     if (items.length === 0) {
-      section.innerHTML = `
-        <div class="no-results">
-          <div class="nr-icon">🔍</div>
-          <p>No dishes found. Try a different filter.</p>
-        </div>`;
+      section.innerHTML = `<div class="no-results"><div class="nr-icon">🔍</div><p>No dishes found. Try a different filter.</p></div>`;
       return;
     }
 
-    // Group by veg/non-veg if showing all
     const vegItems = items.filter(i => i.veg);
     const nonVegItems = items.filter(i => !i.veg);
-
     let html = '';
 
     if (vegItems.length > 0) {
@@ -336,9 +353,7 @@
           <span class="count">${vegItems.length} items</span>
         </div>
         <div class="section-divider"></div>
-        <div class="menu-grid">
-          ${vegItems.map(i => menuCardHTML(i)).join('')}
-        </div>`;
+        <div class="menu-grid">${vegItems.map((i,idx) => menuCardHTML(i,idx)).join('')}</div>`;
     }
 
     if (!vegOnly && nonVegItems.length > 0) {
@@ -349,101 +364,65 @@
           <span class="count">${nonVegItems.length} items</span>
         </div>
         <div class="section-divider" style="background:linear-gradient(to right,var(--red),transparent)"></div>
-        <div class="menu-grid">
-          ${nonVegItems.map(i => menuCardHTML(i)).join('')}
-        </div>`;
+        <div class="menu-grid">${nonVegItems.map((i,idx) => menuCardHTML(i,vegItems.length+idx)).join('')}</div>`;
     }
 
     section.innerHTML = html;
-    updateAllQtyControls();
   }
 
-  function menuCardHTML(item) {
+  function menuCardHTML(item, idx) {
     const qty = cart[item.id] || 0;
-    const vegClass = item.veg ? 'veg' : 'non-veg';
-    const html = `
-      <div class="menu-card card ${vegClass}" data-id="${item.id}" data-category="${item.category}" data-veg="${item.veg}">
+    const delay = Math.min(idx * 0.05, 0.5);
+    return `
+      <div class="menu-card card ${item.veg?'veg':'non-veg'}" style="animation-delay:${delay}s">
         <div class="food-card-veg-badge">
-          <span class="veg-dot ${item.veg ? 'veg' : 'non-veg'}"></span>
+          <span class="veg-dot ${item.veg ? 'veg' : 'nonveg'}"></span>
         </div>
-        
+        <div class="food-emoji-big">${item.emoji}</div>
         <div class="food-info">
           <div class="food-header">
-            <h3 class="food-name">${item.emoji} ${item.name}</h3>
-            <span class="food-price">₹${item.price.toFixed(2)}</span>
+            <h3 class="food-name">${item.name}</h3>
+            <span class="food-price">₹${item.price.toFixed(0)}</span>
           </div>
-          <p class="food-category">${item.category}</p>
-          
+          <span class="food-category">${item.category}</span>
           <div class="food-actions">
             ${qty > 0 ? `
               <div class="qty-control">
-                <button class="qty-btn" onclick="updateCart(${item.id}, -1)">-</button>
+                <button class="qty-btn minus" onclick="updateCart(${item.id}, -1)">−</button>
                 <span class="qty-num">${qty}</span>
-                <button class="qty-btn" onclick="updateCart(${item.id}, 1)">+</button>
+                <button class="qty-btn plus" onclick="updateCart(${item.id}, 1)">+</button>
               </div>
             ` : `
-              <button class="btn btn-outline btn-sm btn-full" onclick="updateCart(${item.id}, 1)">
-                Add to Cart
-              </button>
+              <button class="add-btn btn-full" onclick="updateCart(${item.id}, 1)">+ Add to Cart</button>
             `}
           </div>
         </div>
       </div>`;
-    return html;
   }
 
   function updateCart(id, change) {
-    const currentQty = cart[id] || 0;
-    const newQty = currentQty + change;
-    
-    if (newQty <= 0) {
-      delete cart[id];
-    } else {
-      cart[id] = newQty;
-    }
-
+    const newQty = (cart[id] || 0) + change;
+    if (newQty <= 0) delete cart[id]; else cart[id] = newQty;
     saveCart();
-    renderMenu(); // Re-render the relevant items
+    renderMenu();
     updateCartBar();
-    
-    // Animations
-    const pill = document.getElementById('cartBarPill');
-    if (pill) {
-      pill.classList.remove('pop-out');
-      void pill.offsetWidth; // trigger reflow
-      pill.classList.add('pop-out');
-    }
-
     if (change > 0 && newQty === 1) {
       const item = allMenuItems.find(i => i.id === id);
-      showToast(`${item.emoji} Added to cart`, 'success');
+      if (item) showToast(`${item.emoji} ${item.name} added!`, 'success');
     }
   }
 
   function saveCart() { localStorage.setItem('campusBitesCart', JSON.stringify(cart)); }
 
   function updateCartBar() {
-    try {
-      const bar = document.getElementById('cartBarContainer');
-      const countLabel = document.getElementById('cartCountPill');
-      const navCartBtn = document.getElementById('navCartBtn');
-      
-      let total = 0;
-      for (let key in cart) {
-        total += (Number(cart[key]) || 0);
-      }
-      
-      if (total > 0) {
-        if (bar) bar.setAttribute('style', 'display:flex !important; position:fixed; bottom:0; left:0; right:0; background:#ff6b35; color:white; padding:18px; z-index:9999; align-items:center; justify-content:space-between; box-shadow:0 -5px 20px rgba(0,0,0,0.4);');
-        if (countLabel) countLabel.textContent = total;
-        if (navCartBtn) navCartBtn.style.display = 'flex';
-        if (document.getElementById('navCartCount')) document.getElementById('navCartCount').textContent = total;
-      } else {
-        if (bar) bar.style.display = 'none';
-        if (navCartBtn) navCartBtn.style.display = 'none';
-      }
-    } catch (e) {
-      console.error(e);
+    const bar = document.getElementById('cartBarContainer');
+    const countLabel = document.getElementById('cartCountPill');
+    let total = Object.values(cart).reduce((s, q) => s + (Number(q)||0), 0);
+    if (total > 0) {
+      bar.style.display = 'flex';
+      countLabel.textContent = total;
+    } else {
+      bar.style.display = 'none';
     }
   }
 
@@ -461,6 +440,27 @@
     c.appendChild(t);
     setTimeout(() => t.remove(), 2500);
   }
+
+  // ── RIPPLE ──
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.btn, .add-btn, .qty-btn');
+    if (!btn) return;
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    const rect = btn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    r.style.width = r.style.height = size + 'px';
+    r.style.left = (e.clientX - rect.left - size/2) + 'px';
+    r.style.top  = (e.clientY - rect.top  - size/2) + 'px';
+    btn.appendChild(r);
+    setTimeout(() => r.remove(), 600);
+  });
+
+  // ── STICKY NAV SHADOW ──
+  window.addEventListener('scroll', () => {
+    document.querySelector('.menu-nav').classList.toggle('scrolled', window.scrollY > 10);
+  }, { passive: true });
+
 </script>
 </body>
 </html>

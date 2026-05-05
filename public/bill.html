@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>E-Bill – Campus Bites</title>
   <link rel="stylesheet" href="css/style.css" />
-  <!-- QR Code Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     body { background: var(--bg); }
@@ -13,23 +12,24 @@
 
     /* SUCCESS BANNER */
     .success-banner {
-      background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05));
-      border: 1px solid rgba(34,197,94,0.3);
+      background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.04));
+      border: 1px solid rgba(34,197,94,0.25);
       border-radius: var(--radius-xl);
       padding: 28px; text-align: center; margin-bottom: 24px;
-      animation: scaleIn 0.4s ease;
+      animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .success-icon { 
-      font-size: 4.5rem; margin-bottom: 20px; 
+    .success-icon {
+      font-size: 4.5rem; margin-bottom: 16px;
       animation: checkPop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: block;
     }
     @keyframes checkPop {
-      0% { transform: scale(0); opacity: 0; }
-      80% { transform: scale(1.2); rotate: 10deg; }
-      100% { transform: scale(1); opacity: 1; rotate: 0deg; }
+      0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+      80% { transform: scale(1.2) rotate(5deg); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
-    .success-banner h2 { font-size: 1.8rem; font-weight: 900; color: var(--green); letter-spacing: -0.01em; }
-    .success-banner p { color: var(--text-muted); font-size: 1rem; margin-top: 8px; opacity: 0.9; }
+    .success-banner h2 { font-size: 1.8rem; font-weight: 900; color: var(--green); letter-spacing: -0.03em; }
+    .success-banner p { color: var(--text-muted); font-size: 0.95rem; margin-top: 8px; font-weight: 500; }
 
     /* BILL CARD */
     .bill-print-card {
@@ -38,57 +38,61 @@
       border-radius: var(--radius-xl);
       overflow: hidden;
       margin-bottom: 24px;
-      animation: fadeInUp 0.5s ease;
+      animation: fadeInUp 0.5s ease 0.2s both;
     }
 
-    /* BILL TOP STRIP */
+    /* TOP STRIP */
     .bill-strip {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      padding: 24px;
+      background: var(--primary);
+      padding: 24px 28px;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .bill-strip-left h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
-    .bill-strip-left p { font-size: 0.82rem; opacity: 0.85; }
-    .bill-logo { font-size: 2.5rem; }
+    .bill-strip-left h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 4px; color: #111; letter-spacing: -0.03em; }
+    .bill-strip-left p { font-size: 0.82rem; color: rgba(0,0,0,0.6); font-weight: 600; }
+    .bill-logo { font-size: 2.5rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
 
     /* DASHED DIVIDER */
     .dashed-div {
       border: none;
-      border-top: 2px dashed rgba(255,255,255,0.08);
+      border-top: 2px dashed rgba(255,255,255,0.06);
       margin: 0;
     }
 
     /* BILL BODY */
-    .bill-body { padding: 24px; }
+    .bill-body { padding: 24px 28px; }
 
     /* INFO GRID */
     .info-grid {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 16px; margin-bottom: 24px;
     }
-    .info-cell { }
-    .info-cell .key { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-    .info-cell .val { font-size: 0.9rem; font-weight: 600; }
+    .info-cell .key {
+      font-size: 0.68rem; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 4px; font-weight: 700;
+    }
+    .info-cell .val { font-size: 0.9rem; font-weight: 700; letter-spacing: -0.01em; }
 
     /* ORDER ITEMS TABLE */
     .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
     .items-table thead th {
       padding: 10px 12px; text-align: left;
-      font-size: 0.75rem; color: var(--text-muted); font-weight: 500;
-      text-transform: uppercase; letter-spacing: 0.05em;
+      font-size: 0.7rem; color: var(--text-muted); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.07em;
       border-bottom: 1px solid var(--border);
     }
     .items-table tbody td {
       padding: 12px;
       font-size: 0.875rem;
       border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-weight: 500;
     }
     .items-table tbody tr:last-child td { border-bottom: none; }
-    .items-table .item-name-cell { display: flex; align-items: center; gap: 8px; }
-    .items-table .item-emoji { font-size: 1.2rem; }
-    .items-table .td-right { text-align: right; }
-    .items-table .td-center { text-align: center; }
-    .items-table .subtotal-col { font-weight: 600; color: var(--primary); }
+    .item-name-cell { display: flex; align-items: center; gap: 10px; }
+    .item-emoji { font-size: 1.3rem; }
+    .td-right { text-align: right; }
+    .td-center { text-align: center; }
+    .subtotal-col { font-weight: 700; color: var(--primary); }
 
     /* TOTALS */
     .totals-box {
@@ -99,65 +103,85 @@
     }
     .total-row {
       display: flex; justify-content: space-between;
-      padding: 6px 0; font-size: 0.875rem;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 7px 0; font-size: 0.875rem; font-weight: 500;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .total-row:last-child { border-bottom: none; }
     .total-row .tl { color: var(--text-muted); }
     .grand-total-row {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 16px; margin-top: 8px;
-      background: linear-gradient(135deg, var(--primary-glow), transparent);
-      border: 1px solid var(--primary);
-      border-radius: var(--radius); font-weight: 700;
+      padding: 14px 18px; margin-top: 10px;
+      background: var(--primary-glow);
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius); font-weight: 800;
     }
-    .grand-total-row .gt-label { font-size: 1rem; }
-    .grand-total-row .gt-amount { font-size: 1.3rem; color: var(--primary); }
+    .grand-total-row .gt-label { font-size: 1rem; letter-spacing: -0.01em; }
+    .grand-total-row .gt-amount { font-size: 1.4rem; color: var(--primary); font-family: 'JetBrains Mono', monospace; }
 
     /* PAYMENT INFO */
     .payment-info {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 12px;
       background: var(--surface2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 12px 16px;
+      border-radius: var(--radius); padding: 14px 18px;
       margin-bottom: 20px; font-size: 0.875rem;
     }
-    .pi-icon { font-size: 1.4rem; }
-    .pi-text .pi-method { font-weight: 600; }
-    .pi-text .pi-ref { color: var(--text-muted); font-size: 0.78rem; }
+    .pi-icon { font-size: 1.5rem; }
+    .pi-text .pi-method { font-weight: 700; }
+    .pi-text .pi-ref { color: var(--text-muted); font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; }
 
     /* QR SECTION */
     .qr-section {
-      display: flex; gap: 20px; align-items: flex-start;
-      padding: 20px;
+      display: flex; gap: 24px; align-items: flex-start;
+      padding: 22px;
       background: var(--surface2);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border-bright);
       border-radius: var(--radius-lg);
       margin-bottom: 20px;
+      animation: glow-pulse 3s ease-in-out infinite;
     }
     .qr-box {
-      background: white; border-radius: 10px;
-      padding: 10px; flex-shrink: 0;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      background: white; border-radius: 12px;
+      padding: 12px; flex-shrink: 0;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.5);
     }
     #qrCanvas { display: block; }
-    .qr-info h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-    .qr-info p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; }
+    .qr-info h4 { font-size: 1rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .qr-info p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; font-weight: 500; }
     .qr-order-id {
-      font-family: monospace; font-size: 0.9rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
       color: var(--primary); background: var(--primary-glow);
-      padding: 4px 10px; border-radius: 6px; display: inline-block;
-      margin-top: 8px;
+      padding: 5px 12px; border-radius: 6px; display: inline-block;
+      margin-top: 10px; border: 1px solid rgba(245,197,24,0.2);
     }
     .qr-scan-note {
       font-size: 0.75rem; color: var(--text-dim);
-      margin-top: 8px; display: flex; align-items: center; gap: 5px;
+      margin-top: 10px; display: flex; align-items: center; gap: 6px; font-weight: 600;
+    }
+
+    /* WHAT HAPPENS WHEN SCANNED */
+    .scan-instruction {
+      background: rgba(245,197,24,0.06);
+      border: 1px solid rgba(245,197,24,0.15);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+    }
+    .scan-instruction h5 { font-weight: 800; margin-bottom: 8px; color: var(--primary); font-size: 0.9rem; }
+    .scan-steps { display: flex; flex-direction: column; gap: 6px; }
+    .scan-step { display: flex; align-items: flex-start; gap: 10px; color: var(--text-muted); font-weight: 500; }
+    .step-num {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--primary); color: #111;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 900; flex-shrink: 0; margin-top: 1px;
     }
 
     /* FOOTER */
     .bill-footer {
       text-align: center; padding: 16px;
       border-top: 1px solid var(--border);
-      font-size: 0.78rem; color: var(--text-dim);
+      font-size: 0.78rem; color: var(--text-dim); font-weight: 500;
     }
     .bill-footer strong { color: var(--primary); }
 
@@ -171,9 +195,9 @@
     /* CONFETTI */
     .confetti-piece {
       position: fixed; top: -10px;
-      width: 10px; height: 14px;
       border-radius: 2px;
       animation: confettiFall linear forwards;
+      pointer-events: none;
     }
     @keyframes confettiFall {
       0% { transform: translateY(0) rotate(0deg); opacity: 1; }
@@ -186,17 +210,15 @@
       .qr-section { flex-direction: column; align-items: center; text-align: center; }
       .bill-actions { grid-template-columns: 1fr; }
       .bill-strip { flex-direction: column; gap: 12px; text-align: center; }
+      .bill-body { padding: 18px; }
     }
 
-    /* PRINT STYLES */
     @media print {
       body { background: white !important; color: black !important; }
       .bill-print-card { border: 2px solid #ccc; }
-      .bill-strip { background: #ff6b35 !important; -webkit-print-color-adjust: exact; }
-      .bill-actions, .success-banner, .bill-actions-bottom, nav { display: none !important; }
-      .bill-body { padding: 16px; }
+      .bill-strip { background: #f5c518 !important; -webkit-print-color-adjust: exact; }
+      .bill-actions, .success-banner, .bill-actions-bottom, nav, .scan-instruction { display: none !important; }
       .totals-box, .payment-info, .qr-section { background: #f9f9f9 !important; border: 1px solid #ddd !important; }
-      .items-table tbody td, .total-row .tl { color: #333 !important; }
     }
   </style>
 </head>
@@ -205,6 +227,7 @@
 <nav class="navbar">
   <a class="navbar-brand" href="menu.html"><span class="logo-icon">🍽️</span> Campus<span>Bites</span></a>
   <div class="navbar-actions">
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
     <a href="history.html" class="btn btn-ghost btn-sm">📋 All Orders</a>
   </div>
 </nav>
@@ -213,9 +236,9 @@
 
   <!-- SUCCESS -->
   <div class="success-banner">
-    <div class="success-icon">✅</div>
+    <span class="success-icon">✅</span>
     <h2>Order Confirmed!</h2>
-    <p>Your order has been placed successfully. Present this QR at the reception counter.</p>
+    <p>Your order has been placed successfully. Show this QR at the reception counter.</p>
   </div>
 
   <!-- PRINTABLE BILL -->
@@ -264,7 +287,7 @@
       <div class="totals-box">
         <div class="total-row"><span class="tl">Subtotal</span><span id="billSubtotal">₹0.00</span></div>
         <div class="total-row"><span class="tl">GST (5%)</span><span id="billGst">₹0.00</span></div>
-        <div class="total-row"><span class="tl">Pickup Charge</span><span style="color:var(--green);">FREE</span></div>
+        <div class="total-row"><span class="tl">Pickup Charge</span><span style="color:var(--green); font-weight:700;">FREE</span></div>
       </div>
       <div class="grand-total-row">
         <span class="gt-label">💰 Grand Total</span>
@@ -287,11 +310,21 @@
         </div>
         <div class="qr-info">
           <h4>📱 Scan at Reception</h4>
-          <p>Show this QR code to the reception counter. They will scan it to verify your payment and issue a physical bill.</p>
+          <p>Show this QR code to the reception counter. They will scan it to verify your payment and prepare your order.</p>
           <div class="qr-order-id" id="qrOrderIdLabel">—</div>
           <div class="qr-scan-note">
-            🔒 This QR contains your encrypted order details
+            🔒 QR contains your complete order details
           </div>
+        </div>
+      </div>
+
+      <!-- SCAN INSTRUCTIONS -->
+      <div class="scan-instruction">
+        <h5>📲 What happens when QR is scanned?</h5>
+        <div class="scan-steps">
+          <div class="scan-step"><div class="step-num">1</div><span>Reception scans your QR code using their device</span></div>
+          <div class="scan-step"><div class="step-num">2</div><span>Your complete bill & student details appear instantly</span></div>
+          <div class="scan-step"><div class="step-num">3</div><span>They verify payment reference and hand over your food</span></div>
         </div>
       </div>
 
@@ -318,6 +351,17 @@
 
 <script>
   const API = '';
+
+  // ── THEME ──
+  function applyTheme(mode) {
+    document.body.classList.toggle('light-mode', mode === 'light');
+    document.getElementById('themeBtn').textContent = mode === 'light' ? '🌙' : '☀️';
+    localStorage.setItem('cbTheme', mode);
+  }
+  function toggleTheme() {
+    applyTheme((localStorage.getItem('cbTheme') || 'dark') === 'dark' ? 'light' : 'dark');
+  }
+  applyTheme(localStorage.getItem('cbTheme') || 'dark');
 
   window.addEventListener('DOMContentLoaded', () => {
     const order = JSON.parse(localStorage.getItem('campusBitesCurrentOrder') || 'null');
@@ -354,14 +398,13 @@
     document.getElementById('billPayRef').textContent = `Ref: ${order.paymentRef}`;
     document.getElementById('qrOrderIdLabel').textContent = order.orderId;
 
-    // Items
     const tbody = document.getElementById('billItems');
     tbody.innerHTML = order.items.map(item => `
       <tr>
         <td>
           <div class="item-name-cell">
             <span class="item-emoji">${item.emoji || '🍽️'}</span>
-            <span>${item.name}</span>
+            <span style="font-weight:600;">${item.name}</span>
           </div>
         </td>
         <td class="td-center">${item.qty}</td>
@@ -371,16 +414,19 @@
   }
 
   function generateQR(order) {
+    // Encode full bill data so scanning it shows the complete bill
+    const billUrl = `${window.location.origin}/bill.html`;
     const qrData = JSON.stringify({
       orderId: order.orderId,
       student: order.studentName,
       regNo: order.regNo,
       dept: order.department,
       items: order.items.map(i => `${i.name} x${i.qty}`).join(', '),
-      total: order.total,
+      total: `₹${parseFloat(order.total).toFixed(2)}`,
       payment: order.paymentMethod,
       ref: order.paymentRef,
-      time: order.createdAt
+      time: order.createdAt,
+      viewBill: billUrl
     });
 
     document.getElementById('qrCanvas').innerHTML = '';
@@ -399,20 +445,20 @@
   }
 
   function downloadBill() {
-    showToast('To save as PDF: Click Print → Choose "Save as PDF" as the printer.', 'info');
+    showToast('Click Print → Choose "Save as PDF" as the printer.', 'info');
     setTimeout(() => window.print(), 800);
   }
 
   function launchConfetti() {
-    const colors = ['#ff6b35','#22c55e','#fbbf24','#8b5cf6','#ef4444','#3b82f6'];
-    for (let i = 0; i < 60; i++) {
+    const colors = ['#f5c518','#22c55e','#ffffff','#ff6b35','#ffe566','#fbbf24'];
+    for (let i = 0; i < 70; i++) {
       const el = document.createElement('div');
       el.className = 'confetti-piece';
       el.style.left = Math.random() * 100 + 'vw';
       el.style.background = colors[Math.floor(Math.random() * colors.length)];
-      el.style.width = (Math.random() * 8 + 6) + 'px';
-      el.style.height = (Math.random() * 10 + 8) + 'px';
-      el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      el.style.width = (Math.random() * 8 + 5) + 'px';
+      el.style.height = (Math.random() * 10 + 7) + 'px';
+      el.style.animationDuration = (Math.random() * 2.5 + 2) + 's';
       el.style.animationDelay = (Math.random() * 1.5) + 's';
       el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
       document.body.appendChild(el);
