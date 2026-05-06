@@ -281,7 +281,7 @@
 
     // 3. Sync with backend for latest profile/redirect check
     try {
-      const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email)}`);
+      const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email.toLowerCase())}`, { cache: 'no-store' });
       if (res.ok) {
         userProfile = await res.json();
         // Merge latest data into cache

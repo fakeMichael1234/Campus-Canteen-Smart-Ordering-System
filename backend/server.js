@@ -129,7 +129,8 @@ app.post('/api/users', (req, res) => {
 // Get user by email
 app.get('/api/users/:email', (req, res) => {
   const users = readJSON(USERS_FILE);
-  const user = users.find(u => u.email === decodeURIComponent(req.params.email));
+  const searchEmail = decodeURIComponent(req.params.email).toLowerCase();
+  const user = users.find(u => u.email.toLowerCase() === searchEmail);
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json(user);
 });
@@ -147,7 +148,7 @@ app.post('/api/orders', (req, res) => {
   const orderId = 'ORD' + Date.now();
   const order = {
     orderId,
-    email,
+    email: email.toLowerCase(),
     studentName,
     regNo,
     department,
@@ -169,8 +170,9 @@ app.post('/api/orders', (req, res) => {
 // Get orders by user email
 app.get('/api/orders/user/:email', (req, res) => {
   const orders = readJSON(ORDERS_FILE);
+  const searchEmail = decodeURIComponent(req.params.email).toLowerCase();
   const userOrders = orders
-    .filter(o => o.email === decodeURIComponent(req.params.email))
+    .filter(o => o.email.toLowerCase() === searchEmail)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   res.json(userOrders);
 });

@@ -319,7 +319,7 @@
 
     try {
       const payload = {
-        email: user.email,
+        email: user.email.toLowerCase(),
         googleId: user.googleId,
         googleName: user.googleName,
         googlePhoto: user.googlePhoto,

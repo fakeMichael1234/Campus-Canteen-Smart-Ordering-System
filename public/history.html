@@ -203,7 +203,7 @@
     if (!user) { window.location.href = 'index.html'; return; }
 
     try {
-      const res = await fetch(`${API}/api/orders/user/${encodeURIComponent(user.email)}`);
+      const res = await fetch(`${API}/api/orders/user/${encodeURIComponent(user.email.toLowerCase())}`, { cache: 'no-store' });
       if (res.ok) allOrders = await res.json();
       else allOrders = [];
     } catch {

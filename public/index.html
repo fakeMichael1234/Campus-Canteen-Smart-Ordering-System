@@ -306,7 +306,7 @@
 
       // Try to fetch latest from backend to see if profile is complete
       try {
-        const res = await fetch(`/api/users/${encodeURIComponent(user.email)}`);
+        const res = await fetch(`/api/users/${encodeURIComponent(user.email.toLowerCase())}`, { cache: 'no-store' });
         if (res.ok) {
           const fullProfile = await res.json();
           // Update localStorage with full profile
