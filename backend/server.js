@@ -86,21 +86,27 @@ app.get('/api/menu', (req, res) => res.json(menuItems));
 
 // Save / Update user profile
 app.post('/api/users', (req, res) => {
-  const { email, googleId, googleName, googlePhoto, studentName, regNo, department, year, phone } = req.body;
+  const { email } = req.body;
   if (!email) return res.status(400).json({ error: 'Email required' });
 
   const users = readJSON(USERS_FILE);
   const idx = users.findIndex(u => u.email === email);
   const now = new Date().toISOString();
 
-  const userData = { email, googleId, googleName, googlePhoto, studentName, regNo, department, year, phone, updatedAt: now };
+  // Only take non-undefined fields from req.body
+  const updateData = {};
+  const fields = ['googleId', 'googleName', 'googlePhoto', 'studentName', 'regNo', 'department', 'year', 'phone'];
+  fields.forEach(f => {
+    if (req.body[f] !== undefined) updateData[f] = req.body[f];
+  });
 
   if (idx >= 0) {
-    // Merge — keep old fields, override with new ones
-    users[idx] = { ...users[idx], ...userData };
+    // Update existing user
+    users[idx] = { ...users[idx], ...updateData, updatedAt: now };
   } else {
-    userData.createdAt = now;
-    users.push(userData);
+    // Create new user
+    const newUser = { email, ...updateData, createdAt: now, updatedAt: now };
+    users.push(newUser);
   }
 
   writeJSON(USERS_FILE, users);

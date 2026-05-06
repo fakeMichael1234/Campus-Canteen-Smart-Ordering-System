@@ -298,23 +298,47 @@
   applyTheme(localStorage.getItem('cbTheme') || 'dark');
 
   // ── SAVED USER CHECK ──
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('DOMContentLoaded', async () => {
     const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
     if (user) {
-      // Show saved banner
-      const banner = document.getElementById('savedUserBanner');
-      banner.classList.add('visible');
-      document.getElementById('subName').textContent = user.googleName || 'Student';
-      document.getElementById('subEmail').textContent = user.email || '';
-      const avatar = document.getElementById('subAvatar');
-      if (user.googlePhoto) {
-        avatar.innerHTML = `<img src="${user.googlePhoto}" alt="avatar" />`;
-      } else {
-        avatar.textContent = (user.googleName || 'S')[0].toUpperCase();
+      // Show saved banner with what we have
+      showSavedBanner(user);
+
+      // Try to fetch latest from backend to see if profile is complete
+      try {
+        const res = await fetch(`/api/users/${encodeURIComponent(user.email)}`);
+        if (res.ok) {
+          const fullProfile = await res.json();
+          // Update localStorage with full profile
+          const updatedUser = { ...user, ...fullProfile };
+          localStorage.setItem('campusBitesUser', JSON.stringify(updatedUser));
+          showSavedBanner(updatedUser);
+          
+          // AUTO-REDIRECT: If they have a complete profile, just go to menu
+          if (fullProfile.studentName) {
+            console.log("Auto-redirecting...");
+            setTimeout(() => window.location.href = 'menu.html', 800);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not sync profile with backend", err);
       }
-      document.getElementById('orDivider').style.display = 'flex';
     }
   });
+
+  function showSavedBanner(user) {
+    const banner = document.getElementById('savedUserBanner');
+    banner.classList.add('visible');
+    document.getElementById('subName').textContent = user.studentName || user.googleName || 'Student';
+    document.getElementById('subEmail').textContent = user.email || '';
+    const avatar = document.getElementById('subAvatar');
+    if (user.googlePhoto) {
+      avatar.innerHTML = `<img src="${user.googlePhoto}" alt="avatar" />`;
+    } else {
+      avatar.textContent = (user.studentName || user.googleName || 'S')[0].toUpperCase();
+    }
+    document.getElementById('orDivider').style.display = 'flex';
+  }
 
   function continueAsUser() {
     window.location.href = 'menu.html';
@@ -330,7 +354,7 @@
   async function handleCredentialResponse(response) {
     const payload = parseJwt(response.credential);
 
-    const user = {
+    const googleUser = {
       googleId: payload.sub,
       googleName: payload.name,
       email: payload.email,
@@ -338,19 +362,36 @@
       loginTime: new Date().toISOString()
     };
 
-    // Save FOREVER in localStorage
-    localStorage.setItem('campusBitesUser', JSON.stringify(user));
+    // 1. Save initial Google info
+    localStorage.setItem('campusBitesUser', JSON.stringify(googleUser));
 
-    // Also save to backend silently
+    // 2. Save to backend and get FULL profile back
     try {
-      await fetch('/api/users', {
+      const res = await fetch('/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: payload.email, googleId: payload.sub, googleName: payload.name, googlePhoto: payload.picture })
+        body: JSON.stringify({ 
+          email: payload.email, 
+          googleId: payload.sub, 
+          googleName: payload.name, 
+          googlePhoto: payload.picture 
+        })
       });
-    } catch {}
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.user) {
+          // 3. Save the FULL profile (including studentName, regNo etc. if they exist)
+          localStorage.setItem('campusBitesUser', JSON.stringify({ ...googleUser, ...data.user }));
+        }
+      }
+    } catch (err) {
+      console.error("Backend sync failed", err);
+    }
 
     showToast('Welcome, ' + payload.name + '! 🎉', 'success');
+    
+    // Redirect to menu - it will handle profile completion check
     setTimeout(() => window.location.href = 'menu.html', 1000);
   }
 

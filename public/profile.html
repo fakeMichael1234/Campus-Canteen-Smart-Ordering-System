@@ -318,22 +318,30 @@
     btn.textContent = '⏳ Saving...'; btn.disabled = true;
 
     try {
+      const payload = {
+        email: user.email,
+        googleId: user.googleId,
+        googleName: user.googleName,
+        googlePhoto: user.googlePhoto,
+        studentName, regNo, department: dept,
+        year: selectedYear, phone
+      };
+
       const res = await fetch(`${API}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: user.email,
-          googleId: user.googleId,
-          googleName: user.googleName,
-          googlePhoto: user.googlePhoto,
-          studentName, regNo, department: dept,
-          year: selectedYear, phone
-        })
+        body: JSON.stringify(payload)
       });
+      
       if (!res.ok) throw new Error();
+
+      // Update localStorage so other pages have it instantly
+      const updatedUser = { ...user, ...payload };
+      localStorage.setItem('campusBitesUser', JSON.stringify(updatedUser));
+
       showToast('Profile saved! Redirecting... 🎉', 'success');
       setTimeout(() => window.location.href = 'menu.html', 900);
-    } catch {
+    } catch (err) {
       showToast('Failed to save. Check if server is running.', 'error');
       btn.textContent = '💾 Save & Continue to Menu'; btn.disabled = false;
     }

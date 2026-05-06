@@ -327,15 +327,21 @@
   applyTheme(localStorage.getItem('cbTheme') || 'dark');
 
   window.addEventListener('DOMContentLoaded', async () => {
-    const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
+    // 1. Get user from cache (now contains full profile)
+    let user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
     if (!user) { window.location.href = 'index.html'; return; }
 
     pendingOrder = JSON.parse(localStorage.getItem('campusBitesPendingOrder') || 'null');
     if (!pendingOrder) { window.location.href = 'cart.html'; return; }
 
+    // 2. Sync with backend just in case
     try {
       const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email)}`);
-      if (res.ok) userProfile = await res.json();
+      if (res.ok) {
+        userProfile = await res.json();
+        // Update cache
+        localStorage.setItem('campusBitesUser', JSON.stringify({ ...user, ...userProfile }));
+      }
     } catch {}
 
     const total = pendingOrder.total;
@@ -400,9 +406,9 @@
     try {
       const orderData = {
         email: user.email,
-        studentName: userProfile?.studentName || user.googleName,
-        regNo: userProfile?.regNo || 'N/A',
-        department: userProfile?.department || 'N/A',
+        studentName: user.studentName || user.googleName,
+        regNo: user.regNo || 'N/A',
+        department: user.department || 'N/A',
         items: pendingOrder.items,
         subtotal: pendingOrder.subtotal,
         gst: pendingOrder.gst,

@@ -271,24 +271,36 @@
   applyTheme(localStorage.getItem('cbTheme') || 'dark');
 
   window.addEventListener('DOMContentLoaded', async () => {
-    const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
+    // 1. Get user from cache
+    let user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
     if (!user) { window.location.href = 'index.html'; return; }
 
+    // 2. Show cached data immediately for speed
+    setNavUser(user, user); 
     cart = JSON.parse(localStorage.getItem('campusBitesCart') || '{}');
 
+    // 3. Sync with backend for latest profile/redirect check
     try {
       const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email)}`);
       if (res.ok) {
         userProfile = await res.json();
-        if (!userProfile.studentName) { window.location.href = 'profile.html'; return; }
+        // Merge latest data into cache
+        const updatedUser = { ...user, ...userProfile };
+        localStorage.setItem('campusBitesUser', JSON.stringify(updatedUser));
+        
+        if (!userProfile.studentName) { 
+          window.location.href = 'profile.html'; 
+          return; 
+        }
         setNavUser(userProfile, user);
-      } else {
-        document.getElementById('navNameDisplay').textContent = user.googleName || 'Student';
       }
-    } catch {
-      document.getElementById('navNameDisplay').textContent = user.googleName || 'Student';
+    } catch (err) {
+      console.warn("Sync failed, using cached profile", err);
+      // If we don't even have a student name in cache, we MUST go to profile
+      if (!user.studentName) { window.location.href = 'profile.html'; return; }
     }
 
+    // 4. Fetch Menu
     try {
       const res = await fetch(`${API}/api/menu`);
       allMenuItems = await res.json();
