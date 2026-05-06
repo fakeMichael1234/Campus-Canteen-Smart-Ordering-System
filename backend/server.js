@@ -86,11 +86,12 @@ app.get('/api/menu', (req, res) => res.json(menuItems));
 
 // Save / Update user profile
 app.post('/api/users', (req, res) => {
-  const { email } = req.body;
+  let { email } = req.body;
   if (!email) return res.status(400).json({ error: 'Email required' });
+  email = email.toLowerCase(); // Consistent casing
 
   const users = readJSON(USERS_FILE);
-  const idx = users.findIndex(u => u.email === email);
+  const idx = users.findIndex(u => u.email.toLowerCase() === email);
   const now = new Date().toISOString();
 
   // Only take non-undefined fields from req.body
@@ -106,7 +107,6 @@ app.post('/api/users', (req, res) => {
     const newActivity = req.body.activity;
     const activities = newActivity ? [...existingActivities, { ...newActivity, timestamp: now }] : existingActivities;
     
-    // Keep only last 50 activities to avoid huge files
     if (activities.length > 50) activities.shift();
 
     users[idx] = { ...users[idx], ...updateData, activities, updatedAt: now };

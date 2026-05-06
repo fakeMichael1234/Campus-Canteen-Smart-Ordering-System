@@ -443,12 +443,12 @@
 
   async function syncUserSession(data) {
     const user = JSON.parse(localStorage.getItem('campusBitesUser'));
-    if (!user) return;
+    if (!user || !user.email) return;
     try {
       fetch(`${API}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email, ...data })
+        body: JSON.stringify({ email: user.email.toLowerCase(), ...data })
       });
     } catch {}
   }

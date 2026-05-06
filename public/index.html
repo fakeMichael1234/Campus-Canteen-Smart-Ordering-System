@@ -371,7 +371,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          email: payload.email, 
+          email: payload.email.toLowerCase(), 
           googleId: payload.sub, 
           googleName: payload.name, 
           googlePhoto: payload.picture,
