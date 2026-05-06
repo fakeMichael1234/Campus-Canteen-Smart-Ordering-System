@@ -247,7 +247,10 @@
             <div class="sub-name" id="subName">—</div>
             <div class="sub-email" id="subEmail">—</div>
           </div>
-          <button class="btn-continue" onclick="continueAsUser()">Continue →</button>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+            <button class="btn-continue" onclick="continueAsUser()">Continue →</button>
+            <button onclick="logout()" style="background:none; border:none; color:var(--text-dim); font-size:0.7rem; cursor:pointer; text-decoration:underline;">Not you? Logout</button>
+          </div>
         </div>
 
         <div id="orDivider" class="or-divider" style="display:none;">or sign in with</div>
@@ -342,6 +345,12 @@
 
   function continueAsUser() {
     window.location.href = 'menu.html';
+  }
+
+  function logout() {
+    localStorage.removeItem('campusBitesUser');
+    localStorage.removeItem('campusBitesCart');
+    window.location.reload();
   }
 
   function parseJwt(token) {
