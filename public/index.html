@@ -374,7 +374,8 @@
           email: payload.email, 
           googleId: payload.sub, 
           googleName: payload.name, 
-          googlePhoto: payload.picture 
+          googlePhoto: payload.picture,
+          activity: { type: 'LOGIN', detail: 'User logged in via Google' }
         })
       });
       

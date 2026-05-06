@@ -95,17 +95,30 @@ app.post('/api/users', (req, res) => {
 
   // Only take non-undefined fields from req.body
   const updateData = {};
-  const fields = ['googleId', 'googleName', 'googlePhoto', 'studentName', 'regNo', 'department', 'year', 'phone'];
+  const fields = ['googleId', 'googleName', 'googlePhoto', 'studentName', 'regNo', 'department', 'year', 'phone', 'cart'];
   fields.forEach(f => {
     if (req.body[f] !== undefined) updateData[f] = req.body[f];
   });
 
   if (idx >= 0) {
     // Update existing user
-    users[idx] = { ...users[idx], ...updateData, updatedAt: now };
+    const existingActivities = users[idx].activities || [];
+    const newActivity = req.body.activity;
+    const activities = newActivity ? [...existingActivities, { ...newActivity, timestamp: now }] : existingActivities;
+    
+    // Keep only last 50 activities to avoid huge files
+    if (activities.length > 50) activities.shift();
+
+    users[idx] = { ...users[idx], ...updateData, activities, updatedAt: now };
   } else {
     // Create new user
-    const newUser = { email, ...updateData, createdAt: now, updatedAt: now };
+    const newUser = { 
+      email, 
+      ...updateData, 
+      activities: req.body.activity ? [{ ...req.body.activity, timestamp: now }] : [],
+      createdAt: now, 
+      updatedAt: now 
+    };
     users.push(newUser);
   }
 

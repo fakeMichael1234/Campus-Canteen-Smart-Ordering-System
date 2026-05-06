@@ -426,6 +426,19 @@
       if (!res.ok) throw new Error();
       const { order } = await res.json();
 
+      // Log activity and clear backend cart
+      try {
+        fetch(`${API}/api/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            email: user.email, 
+            cart: {}, 
+            activity: { type: 'ORDER_PLACE', detail: `Placed order ${order.orderId} for ₹${order.total}` } 
+          })
+        });
+      } catch {}
+
       localStorage.removeItem('campusBitesCart');
       localStorage.removeItem('campusBitesPendingOrder');
       localStorage.setItem('campusBitesCurrentOrder', JSON.stringify(order));

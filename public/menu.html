@@ -288,6 +288,13 @@
         const updatedUser = { ...user, ...userProfile };
         localStorage.setItem('campusBitesUser', JSON.stringify(updatedUser));
         
+        // Restore cart from backend if local is empty
+        if (Object.keys(cart).length === 0 && userProfile.cart) {
+          cart = userProfile.cart;
+          localStorage.setItem('campusBitesCart', JSON.stringify(cart));
+          updateCartBar();
+        }
+
         if (!userProfile.studentName) { 
           window.location.href = 'profile.html'; 
           return; 
@@ -420,11 +427,31 @@
     updateCartBar();
     if (change > 0 && newQty === 1) {
       const item = allMenuItems.find(i => i.id === id);
-      if (item) showToast(`${item.emoji} ${item.name} added!`, 'success');
+      if (item) {
+        showToast(`${item.emoji} ${item.name} added!`, 'success');
+        // Log activity silently
+        syncUserSession({ activity: { type: 'CART_ADD', detail: `Added ${item.name} to cart` } });
+      }
     }
   }
 
-  function saveCart() { localStorage.setItem('campusBitesCart', JSON.stringify(cart)); }
+  async function saveCart() { 
+    localStorage.setItem('campusBitesCart', JSON.stringify(cart)); 
+    // Sync cart to backend
+    syncUserSession({ cart });
+  }
+
+  async function syncUserSession(data) {
+    const user = JSON.parse(localStorage.getItem('campusBitesUser'));
+    if (!user) return;
+    try {
+      fetch(`${API}/api/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, ...data })
+      });
+    } catch {}
+  }
 
   function updateCartBar() {
     const bar = document.getElementById('cartBarContainer');
