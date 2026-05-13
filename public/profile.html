@@ -1,359 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Student Profile – Campus Bites</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Profile – Campus Bites</title>
+  <link rel="stylesheet" href="css/style.css"/>
   <style>
-    .profile-page {
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 24px;
-      background: var(--bg);
-      position: relative; overflow: hidden;
+    body{padding-bottom:40px;}
+    .profile-page{max-width:700px;margin:0 auto;padding:28px 24px;}
+
+    /* PROFILE HERO */
+    .profile-hero{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius-xl);padding:32px;
+      margin-bottom:24px;text-align:center;
+      position:relative;overflow:hidden;
+      animation:fadeInUp 0.5s ease;
+    }
+    .profile-hero::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:100px;
+      background:linear-gradient(135deg,rgba(255,107,53,0.12),rgba(255,159,28,0.08));
+      pointer-events:none;
+    }
+    .ph-avatar{
+      width:90px;height:90px;border-radius:50%;
+      background:linear-gradient(135deg,var(--primary),var(--orange2));
+      border:4px solid var(--primary);
+      display:flex;align-items:center;justify-content:center;
+      font-size:2.2rem;font-weight:900;color:#fff;
+      margin:0 auto 16px;position:relative;z-index:1;overflow:hidden;
+      box-shadow:0 8px 32px var(--primary-glow);
+    }
+    .ph-avatar img{width:100%;height:100%;object-fit:cover;}
+    .ph-name{font-size:1.4rem;font-weight:900;letter-spacing:-0.03em;margin-bottom:4px;position:relative;z-index:1;}
+    .ph-email{font-size:0.85rem;color:var(--text-muted);font-weight:500;position:relative;z-index:1;}
+    .ph-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap;position:relative;z-index:1;}
+
+    /* FORM SECTION */
+    .form-section{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius-xl);padding:28px;
+      margin-bottom:20px;
+      animation:fadeInUp 0.5s ease 0.05s both;
+      overflow:hidden;position:relative;
+    }
+    .form-section::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--primary),var(--orange2));}
+    .form-section-title{
+      font-size:0.95rem;font-weight:800;margin-bottom:22px;
+      letter-spacing:-0.02em;display:flex;align-items:center;gap:8px;
     }
 
-    /* Animated background */
-    .profile-bg {
-      position: absolute; inset: 0; pointer-events: none;
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    @media(max-width:580px){.form-grid{grid-template-columns:1fr;}}
+
+    /* SUCCESS ANIMATION */
+    .save-success{
+      display:none;
+      flex-direction:column;align-items:center;justify-content:center;
+      padding:24px;text-align:center;
     }
-    .profile-bg::before {
-      content: '';
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(245,197,24,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(245,197,24,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      animation: gridDrift 25s linear infinite;
-    }
-    @keyframes gridDrift {
-      0% { transform: translate(0,0); }
-      100% { transform: translate(40px, 40px); }
-    }
-    .profile-bg::after {
-      content: '';
-      position: absolute;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(245,197,24,0.08) 0%, transparent 65%);
-      top: 50%; left: 50%; transform: translate(-50%, -50%);
-      animation: orbPulse 6s ease-in-out infinite;
-    }
-    @keyframes orbPulse {
-      0%,100% { transform: translate(-50%,-50%) scale(1); opacity:0.7; }
-      50% { transform: translate(-50%,-50%) scale(1.2); opacity:1; }
+    .save-success.show{display:flex;animation:scaleIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);}
+    .success-ring{
+      width:70px;height:70px;border-radius:50%;
+      background:var(--green-glow);border:3px solid var(--green);
+      display:flex;align-items:center;justify-content:center;
+      font-size:2rem;margin-bottom:14px;
+      animation:pulse 0.6s ease-in-out;
     }
 
-    .profile-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 44px;
-      width: 100%; max-width: 520px;
-      position: relative; z-index: 1;
-      animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      overflow: hidden;
+    /* DANGER ZONE */
+    .danger-zone{
+      background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.2);
+      border-radius:var(--radius-lg);padding:20px;
+      animation:fadeInUp 0.5s ease 0.1s both;
     }
-    .profile-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary));
-      background-size: 200% 100%;
-      animation: shimmer 2.5s linear infinite;
-    }
+    .danger-zone h4{font-size:0.9rem;font-weight:800;color:var(--red);margin-bottom:6px;}
+    .danger-zone p{font-size:0.8rem;color:var(--text-muted);margin-bottom:14px;}
 
-    .profile-header { text-align: center; margin-bottom: 36px; }
-    .avatar-wrap {
-      width: 84px; height: 84px; border-radius: 50%;
-      background: var(--primary);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.4rem; margin: 0 auto 16px;
-      box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--primary), 0 0 32px var(--primary-glow);
-      animation: glow-pulse 3s ease-in-out infinite;
-    }
-    .avatar-img {
-      width: 84px; height: 84px; border-radius: 50%;
-      object-fit: cover;
-      box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--primary), 0 0 32px var(--primary-glow);
-      animation: glow-pulse 3s ease-in-out infinite;
-    }
-    .profile-header h2 { font-size: 1.55rem; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 6px; }
-    .profile-header p { color: var(--text-muted); font-size: 0.875rem; font-weight: 500; }
-    .google-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 50px; padding: 5px 14px;
-      font-size: 0.78rem; color: var(--text-muted);
-      margin-top: 12px; font-weight: 600;
-    }
-
-    .form-grid { display: flex; flex-direction: column; gap: 22px; }
-
-    /* DEPT CHIPS */
-    .dept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .dept-chip {
-      padding: 10px 14px;
-      background: var(--surface2);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      cursor: pointer; transition: var(--transition-bounce);
-      font-size: 0.82rem; font-weight: 700; text-align: center;
-      color: var(--text-muted);
-    }
-    .dept-chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
-    .dept-chip.selected { border-color: var(--primary); background: var(--primary-glow); color: var(--primary); }
-
-    /* YEAR CHIPS */
-    .year-row { display: flex; gap: 8px; }
-    .year-chip {
-      flex: 1; padding: 10px 8px;
-      background: var(--surface2); border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm); cursor: pointer;
-      font-size: 0.82rem; font-weight: 800; text-align: center;
-      color: var(--text-muted); transition: var(--transition-bounce);
-    }
-    .year-chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
-    .year-chip.selected { border-color: var(--primary); background: var(--primary); color: #111; }
-
-    .save-btn-wrap { margin-top: 8px; }
-    .save-btn-wrap .btn { animation: glow-pulse 3s ease-in-out infinite; }
-    .required-note { font-size: 0.73rem; color: var(--text-dim); text-align: center; margin-top: 12px; font-weight: 600; }
-
-    /* SAVED INDICATOR */
-    .already-saved-banner {
-      display: none;
-      background: rgba(34,197,94,0.08);
-      border: 1px solid rgba(34,197,94,0.2);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      font-size: 0.82rem; color: var(--green);
-      text-align: center; font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .already-saved-banner.visible { display: block; animation: fadeInUp 0.3s ease; }
-
-    @media (max-width: 480px) {
-      .profile-card { padding: 28px 20px; }
-      .dept-grid { grid-template-columns: 1fr; }
-    }
+    @media(max-width:600px){.profile-page{padding:16px;}}
   </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="navbar" style="position:fixed; top:0; left:0; right:0; z-index:200;">
-  <a class="navbar-brand" href="menu.html"><span class="logo-icon">🍽️</span> Campus<span>Bites</span></a>
+<nav class="navbar">
+  <a class="navbar-brand" href="dashboard.html">
+    <div class="brand-icon">🍽️</div>
+    Campus<span>Bites</span>
+  </a>
   <div class="navbar-actions">
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <a href="menu.html" class="btn btn-primary btn-sm">🍽️ Menu</a>
   </div>
 </nav>
 
-<div class="profile-page" style="padding-top:90px;">
-  <div class="profile-bg"></div>
-
-  <div class="profile-card">
-    <div class="profile-header">
-      <div id="avatarWrap" class="avatar-wrap">🎓</div>
-      <h2 id="profileTitle">Complete Your Profile</h2>
-      <p id="profileSubtitle">We need a few details so your orders are personalized</p>
-      <div class="google-badge" id="loggedInBadge">
-        <span>🔒</span> <span id="loggedInEmail">Loading...</span>
-      </div>
+<div class="profile-page">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;animation:fadeInUp 0.4s ease;">
+    <a href="dashboard.html" class="back-btn">←</a>
+    <div>
+      <h1 class="page-title">👤 My <span>Profile</span></h1>
+      <p class="page-subtitle">Manage your account & preferences</p>
     </div>
+  </div>
 
-    <div class="already-saved-banner" id="savedBanner">✅ Profile already saved — updating your details</div>
+  <!-- PROFILE HERO -->
+  <div class="profile-hero">
+    <div class="ph-avatar" id="phAvatar">?</div>
+    <div class="ph-name" id="phName">—</div>
+    <div class="ph-email" id="phEmail">—</div>
+    <div class="ph-badges">
+      <span class="badge badge-primary" id="phDept">—</span>
+      <span class="badge" style="background:var(--surface2);color:var(--text-muted);" id="phYear">—</span>
+    </div>
+  </div>
 
+  <!-- SUCCESS -->
+  <div id="saveSuccess" class="save-success" style="display:none;">
+    <div class="success-ring">✅</div>
+    <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:6px;">Profile Saved!</h3>
+    <p style="color:var(--text-muted);font-size:0.85rem;">Your information has been updated.</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-section" id="profileForm">
+    <div class="form-section-title">🎓 Student Information</div>
     <div class="form-grid">
       <div class="input-group">
         <label class="input-label">Full Name *</label>
-        <div class="input-icon-wrap">
-          <span class="icon">👤</span>
-          <input class="input" type="text" id="studentName" placeholder="e.g. Rahul Kumar" />
-        </div>
+        <input class="input" id="fName" placeholder="Your full name" required/>
       </div>
-
       <div class="input-group">
         <label class="input-label">Register Number *</label>
-        <div class="input-icon-wrap">
-          <span class="icon">🎫</span>
-          <input class="input" type="text" id="regNo" placeholder="e.g. 22CS001" />
-        </div>
+        <input class="input" id="fRegNo" placeholder="e.g. 21CS001" required/>
       </div>
-
       <div class="input-group">
         <label class="input-label">Department *</label>
-        <div class="dept-grid" id="deptGrid">
-          <div class="dept-chip" data-dept="CSE" onclick="selectDept(this)">💻 CSE</div>
-          <div class="dept-chip" data-dept="ECE" onclick="selectDept(this)">📡 ECE</div>
-          <div class="dept-chip" data-dept="Mech" onclick="selectDept(this)">⚙️ Mech</div>
-          <div class="dept-chip" data-dept="Civil" onclick="selectDept(this)">🏗️ Civil</div>
-          <div class="dept-chip" data-dept="EEE" onclick="selectDept(this)">⚡ EEE</div>
-          <div class="dept-chip" data-dept="IT" onclick="selectDept(this)">🖥️ IT</div>
-          <div class="dept-chip" data-dept="BioTech" onclick="selectDept(this)">🧬 BioTech</div>
-          <div class="dept-chip" data-dept="Other" onclick="selectDept(this)">🎓 Other</div>
-        </div>
-        <input class="input" type="text" id="deptCustom" placeholder="Or type your department..."
-          style="margin-top:8px;" oninput="clearDeptChip()" />
+        <select class="input" id="fDept">
+          <option value="">Select Department</option>
+          <option>Computer Science</option>
+          <option>Information Technology</option>
+          <option>Electronics</option>
+          <option>Mechanical</option>
+          <option>Civil</option>
+          <option>Electrical</option>
+          <option>Chemical</option>
+          <option>Biotechnology</option>
+          <option>MBA</option>
+          <option>MCA</option>
+          <option>Other</option>
+        </select>
       </div>
-
       <div class="input-group">
-        <label class="input-label">Year of Study</label>
-        <div class="year-row">
-          <div class="year-chip" data-year="1" onclick="selectYear(this)">1st</div>
-          <div class="year-chip" data-year="2" onclick="selectYear(this)">2nd</div>
-          <div class="year-chip" data-year="3" onclick="selectYear(this)">3rd</div>
-          <div class="year-chip" data-year="4" onclick="selectYear(this)">4th</div>
-        </div>
+        <label class="input-label">Year of Study *</label>
+        <select class="input" id="fYear">
+          <option value="">Select Year</option>
+          <option>1st</option>
+          <option>2nd</option>
+          <option>3rd</option>
+          <option>4th</option>
+          <option>PG 1st</option>
+          <option>PG 2nd</option>
+        </select>
       </div>
-
       <div class="input-group">
-        <label class="input-label">Phone Number (optional)</label>
-        <div class="input-icon-wrap">
-          <span class="icon">📱</span>
-          <input class="input" type="tel" id="phone" placeholder="10-digit mobile number" maxlength="10" />
-        </div>
+        <label class="input-label">Phone Number</label>
+        <input class="input" id="fPhone" type="tel" placeholder="10-digit mobile number" maxlength="10"/>
       </div>
-
-      <div class="save-btn-wrap">
-        <button class="btn btn-primary btn-full btn-lg" onclick="saveProfile()" id="saveBtn">
-          💾 Save & Continue to Menu
-        </button>
+      <div class="input-group">
+        <label class="input-label">Hostel / Block</label>
+        <input class="input" id="fHostel" placeholder="e.g. Block A / Hostel 2"/>
       </div>
-      <p class="required-note">* Required fields · Your details are saved for all future orders</p>
     </div>
+    <div style="margin-top:20px;">
+      <button class="btn btn-primary btn-full" onclick="saveProfile()" id="saveBtn">
+        💾 Save Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- ACCOUNT -->
+  <div class="form-section" style="animation-delay:0.08s;">
+    <div class="form-section-title">🔗 Connected Account</div>
+    <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface2);border-radius:var(--radius);">
+      <div style="font-size:1.8rem;">🔒</div>
+      <div style="flex:1;">
+        <div style="font-size:0.9rem;font-weight:700;" id="acEmail">—</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px;">Google Account · Sign-in secured</div>
+      </div>
+      <span class="badge badge-veg">✓ Connected</span>
+    </div>
+  </div>
+
+  <!-- DANGER ZONE -->
+  <div class="danger-zone">
+    <h4>⚠️ Danger Zone</h4>
+    <p>Logging out will clear your local session. Your order history remains saved.</p>
+    <button class="btn btn-danger btn-sm" onclick="logout()">🚪 Logout</button>
   </div>
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-  const API = '';
-  let selectedDept = '';
-  let selectedYear = '';
+  const API='';
 
-  // ── THEME ──
-  function applyTheme(mode) {
-    document.body.classList.toggle('light-mode', mode === 'light');
-    document.getElementById('themeBtn').textContent = mode === 'light' ? '🌙' : '☀️';
-    localStorage.setItem('cbTheme', mode);
+  function applyTheme(m){
+    document.body.classList.toggle('light-mode',m==='light');
+    document.getElementById('themeBtn').textContent=m==='light'?'🌙':'☀️';
+    localStorage.setItem('cbTheme',m);
   }
-  function toggleTheme() {
-    applyTheme((localStorage.getItem('cbTheme') || 'dark') === 'dark' ? 'light' : 'dark');
-  }
-  applyTheme(localStorage.getItem('cbTheme') || 'dark');
+  function toggleTheme(){applyTheme((localStorage.getItem('cbTheme')||'dark')==='dark'?'light':'dark');}
+  applyTheme(localStorage.getItem('cbTheme')||'dark');
 
-  window.addEventListener('DOMContentLoaded', async () => {
-    const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
-    if (!user) { window.location.href = 'index.html'; return; }
+  window.addEventListener('DOMContentLoaded',async()=>{
+    let user=JSON.parse(localStorage.getItem('campusBitesUser')||'null');
+    if(!user){window.location.href='index.html';return;}
 
-    document.getElementById('loggedInEmail').textContent = user.email;
+    // Fill from cache immediately
+    fillUI(user);
 
-    if (user.googlePhoto) {
-      const wrap = document.getElementById('avatarWrap');
-      const img = document.createElement('img');
-      img.src = user.googlePhoto;
-      img.alt = 'avatar';
-      img.id = 'avatarWrap';
-      img.className = 'avatar-img';
-      wrap.replaceWith(img);
-    }
-
-    // Pre-fill saved details
-    try {
-      const res = await fetch(`${API}/api/users/${encodeURIComponent(user.email)}`);
-      if (res.ok) {
-        const p = await res.json();
-        if (p.studentName) {
-          document.getElementById('savedBanner').classList.add('visible');
-          document.getElementById('profileTitle').textContent = 'Update Your Profile';
-          document.getElementById('profileSubtitle').textContent = 'Your saved details are pre-filled below';
-          document.getElementById('studentName').value = p.studentName;
-        }
-        if (p.regNo) document.getElementById('regNo').value = p.regNo;
-        if (p.department) {
-          const chip = document.querySelector(`.dept-chip[data-dept="${p.department}"]`);
-          if (chip) { selectDept(chip); }
-          else { document.getElementById('deptCustom').value = p.department; selectedDept = p.department; }
-        }
-        if (p.year) {
-          const yc = document.querySelector(`.year-chip[data-year="${p.year}"]`);
-          if (yc) selectYear(yc);
-        }
-        if (p.phone) document.getElementById('phone').value = p.phone;
+    // Sync from backend
+    try{
+      const r=await fetch(`${API}/api/users/${encodeURIComponent(user.email.toLowerCase())}`,{cache:'no-store'});
+      if(r.ok){
+        const fp=await r.json();
+        user={...user,...fp};
+        localStorage.setItem('campusBitesUser',JSON.stringify(user));
+        fillUI(user);
       }
-    } catch {}
+    }catch{}
   });
 
-  function selectDept(el) {
-    document.querySelectorAll('.dept-chip').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedDept = el.dataset.dept;
-    document.getElementById('deptCustom').value = '';
-  }
+  function fillUI(user){
+    // Avatar
+    const av=document.getElementById('phAvatar');
+    if(user.googlePhoto)av.innerHTML=`<img src="${user.googlePhoto}" alt=""/>`;
+    else av.textContent=(user.studentName||user.googleName||'S')[0].toUpperCase();
 
-  function clearDeptChip() {
-    document.querySelectorAll('.dept-chip').forEach(c => c.classList.remove('selected'));
-    selectedDept = document.getElementById('deptCustom').value;
-  }
+    document.getElementById('phName').textContent=user.studentName||user.googleName||'Student';
+    document.getElementById('phEmail').textContent=user.email||'';
+    document.getElementById('phDept').textContent=user.department||'No department';
+    document.getElementById('phYear').textContent=user.year?user.year+' Year':'Year not set';
+    document.getElementById('acEmail').textContent=user.email||'—';
 
-  function selectYear(el) {
-    document.querySelectorAll('.year-chip').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedYear = el.dataset.year;
-  }
+    // Form fields
+    document.getElementById('fName').value=user.studentName||'';
+    document.getElementById('fRegNo').value=user.regNo||'';
+    document.getElementById('fPhone').value=user.phone||'';
+    document.getElementById('fHostel').value=user.hostel||'';
 
-  async function saveProfile() {
-    const user = JSON.parse(localStorage.getItem('campusBitesUser'));
-    const studentName = document.getElementById('studentName').value.trim();
-    const regNo = document.getElementById('regNo').value.trim();
-    const dept = selectedDept || document.getElementById('deptCustom').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-
-    if (!studentName) { showToast('Please enter your full name.', 'error'); return; }
-    if (!regNo) { showToast('Please enter your register number.', 'error'); return; }
-    if (!dept) { showToast('Please select or enter your department.', 'error'); return; }
-
-    const btn = document.getElementById('saveBtn');
-    btn.textContent = '⏳ Saving...'; btn.disabled = true;
-
-    try {
-      const payload = {
-        email: user.email.toLowerCase(),
-        googleId: user.googleId,
-        googleName: user.googleName,
-        googlePhoto: user.googlePhoto,
-        studentName, regNo, department: dept,
-        year: selectedYear, phone
-      };
-
-      const res = await fetch(`${API}/api/users`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      
-      if (!res.ok) throw new Error();
-
-      // Update localStorage so other pages have it instantly
-      const updatedUser = { ...user, ...payload };
-      localStorage.setItem('campusBitesUser', JSON.stringify(updatedUser));
-
-      showToast('Profile saved! Redirecting... 🎉', 'success');
-      setTimeout(() => window.location.href = 'menu.html', 900);
-    } catch (err) {
-      showToast('Failed to save. Check if server is running.', 'error');
-      btn.textContent = '💾 Save & Continue to Menu'; btn.disabled = false;
+    const deptSel=document.getElementById('fDept');
+    if(user.department){
+      for(let o of deptSel.options)if(o.value===user.department){o.selected=true;break;}
+    }
+    const yearSel=document.getElementById('fYear');
+    if(user.year){
+      for(let o of yearSel.options)if(o.value===user.year){o.selected=true;break;}
     }
   }
 
-  function showToast(msg, type = 'info') {
-    const c = document.getElementById('toastContainer');
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerHTML = (type==='success'?'✅':type==='error'?'❌':'ℹ️') + ' ' + msg;
-    c.appendChild(t);
-    setTimeout(() => t.remove(), 3500);
+  async function saveProfile(){
+    const name=document.getElementById('fName').value.trim();
+    const reg=document.getElementById('fRegNo').value.trim();
+    const dept=document.getElementById('fDept').value;
+    const year=document.getElementById('fYear').value;
+    const phone=document.getElementById('fPhone').value.trim();
+    const hostel=document.getElementById('fHostel').value.trim();
+
+    if(!name||!reg||!dept||!year){
+      showToast('Please fill all required fields','error');return;
+    }
+
+    const btn=document.getElementById('saveBtn');
+    btn.disabled=true;btn.textContent='Saving…';
+
+    const user=JSON.parse(localStorage.getItem('campusBitesUser')||'{}');
+    const updateData={
+      email:user.email.toLowerCase(),
+      studentName:name,regNo:reg,department:dept,year,phone,hostel,
+      activity:{type:'PROFILE_UPDATE',detail:'Profile updated'}
+    };
+
+    try{
+      const r=await fetch(`${API}/api/users`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(updateData)
+      });
+      if(r.ok){
+        const d=await r.json();
+        const updated={...user,...d.user};
+        localStorage.setItem('campusBitesUser',JSON.stringify(updated));
+        fillUI(updated);
+        showSuccessAnim();
+        showToast('Profile saved! 🎉','success');
+      }else{throw new Error();}
+    }catch{
+      showToast('Save failed. Try again.','error');
+    }finally{
+      btn.disabled=false;btn.textContent='💾 Save Profile';
+    }
+  }
+
+  function showSuccessAnim(){
+    const s=document.getElementById('saveSuccess');
+    s.style.display='flex';
+    s.classList.add('show');
+    setTimeout(()=>{s.style.display='none';s.classList.remove('show');},3000);
+  }
+
+  function logout(){
+    localStorage.removeItem('campusBitesUser');
+    localStorage.removeItem('campusBitesCart');
+    window.location.href='index.html';
+  }
+
+  function showToast(msg,type='info'){
+    const c=document.getElementById('toastContainer');
+    const t=document.createElement('div');
+    t.className=`toast ${type}`;t.textContent=msg;
+    c.appendChild(t);setTimeout(()=>t.remove(),3500);
   }
 </script>
 </body>

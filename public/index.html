@@ -1,201 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus Bites – College Food Order</title>
-  <meta name="description" content="Order food faster at your college canteen. Skip the queue, pay online, get your e-bill instantly." />
-  <link rel="stylesheet" href="css/style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Campus Bites – Skip the Queue, Order Smart</title>
+  <meta name="description" content="Order food at your college canteen online. Skip queues, pay instantly, pick up hot food."/>
+  <link rel="stylesheet" href="css/style.css"/>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    body { overflow: hidden; }
-    @media(max-width:768px){ body { overflow: auto; } }
+    body{overflow:hidden;}
+    @media(max-width:768px){body{overflow:auto;}}
 
-    .login-page {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-    @media (max-width: 768px) {
-      .login-page { grid-template-columns: 1fr; }
-      .login-hero { display: none; }
-      body { overflow: auto; }
-    }
+    .login-page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
+    @media(max-width:768px){.login-page{grid-template-columns:1fr;}.login-hero{display:none;}}
 
-    /* ── HERO ── */
-    .login-hero {
-      position: relative;
-      background: #0a0a0a;
-      overflow: hidden;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 60px 50px;
-      text-align: center;
+    /* HERO SIDE */
+    .login-hero{
+      position:relative;background:#070710;overflow:hidden;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:60px 50px;text-align:center;
     }
-    body.light-mode .login-hero { background: #f0ede4; }
+    body.light-mode .login-hero{background:#1a0a02;}
 
-    /* Animated grid background */
-    .hero-grid {
-      position: absolute; inset: 0; pointer-events: none;
+    .hero-bg{
+      position:absolute;inset:0;pointer-events:none;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%,rgba(255,107,53,0.15) 0%,transparent 70%),
+        radial-gradient(ellipse 60% 60% at 80% 80%,rgba(255,159,28,0.08) 0%,transparent 60%);
+    }
+    .hero-grid{
+      position:absolute;inset:0;pointer-events:none;
       background-image:
-        linear-gradient(rgba(245,197,24,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(245,197,24,0.04) 1px, transparent 1px);
-      background-size: 44px 44px;
-      animation: gridDrift 20s linear infinite;
+        linear-gradient(rgba(255,107,53,0.04) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,107,53,0.04) 1px,transparent 1px);
+      background-size:48px 48px;
+      animation:gridDrift 25s linear infinite;
     }
-    @keyframes gridDrift {
-      0% { transform: translate(0,0); }
-      100% { transform: translate(44px, 44px); }
-    }
+    @keyframes gridDrift{0%{transform:translate(0,0);}100%{transform:translate(48px,48px);}}
 
-    .hero-glow-orb {
-      position: absolute;
-      width: 500px; height: 500px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(245,197,24,0.12) 0%, transparent 65%);
-      top: 50%; left: 50%; transform: translate(-50%, -50%);
-      animation: orbPulse 5s ease-in-out infinite;
-      pointer-events: none;
-    }
-    @keyframes orbPulse {
-      0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.8; }
-      50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
-    }
+    .hero-content{position:relative;z-index:2;}
 
-    .hero-content { position: relative; z-index: 2; }
+    .hero-food-ring{
+      position:relative;width:140px;height:140px;margin:0 auto 36px;
+    }
+    .hero-food-main{
+      font-size:5rem;line-height:1;
+      animation:float 4s ease-in-out infinite;
+      filter:drop-shadow(0 0 30px rgba(255,107,53,0.5));
+      display:block;
+    }
+    .hero-food-orbit{
+      position:absolute;font-size:1.8rem;
+      animation:orbit 8s linear infinite;
+    }
+    .hero-food-orbit:nth-child(2){top:-10px;right:-10px;animation-delay:-2s;}
+    .hero-food-orbit:nth-child(3){bottom:-10px;right:10px;animation-delay:-4s;}
+    .hero-food-orbit:nth-child(4){bottom:0;left:-10px;animation-delay:-6s;}
+    @keyframes orbit{0%{transform:rotate(0deg) translateX(70px) rotate(0deg);}100%{transform:rotate(360deg) translateX(70px) rotate(-360deg);}}
 
-    .hero-emoji-wrap { position: relative; margin-bottom: 32px; display: inline-block; }
-    .hero-emoji {
-      font-size: 7rem; line-height: 1;
-      animation: floatFood 4s ease-in-out infinite;
-      display: block; filter: drop-shadow(0 0 30px rgba(245,197,24,0.4));
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);
+      border-radius:50px;padding:6px 14px;
+      font-size:0.75rem;font-weight:700;color:var(--primary);
+      margin-bottom:18px;letter-spacing:0.05em;text-transform:uppercase;
     }
-    @keyframes floatFood {
-      0%,100% { transform: translateY(0) rotate(-3deg); }
-      50% { transform: translateY(-18px) rotate(3deg); }
-    }
+    .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--primary);animation:pulse 1.5s ease-in-out infinite;}
 
-    .hero-title {
-      font-size: 3.6rem; font-weight: 900;
-      line-height: 1; margin-bottom: 16px;
-      letter-spacing: -0.04em;
+    .hero-title{
+      font-size:3.2rem;font-weight:900;
+      line-height:1.05;margin-bottom:14px;
+      letter-spacing:-0.04em;color:#fff;
     }
-    .hero-subtitle {
-      color: var(--text-muted); font-size: 1rem;
-      max-width: 360px; line-height: 1.65; font-weight: 500;
-      margin: 0 auto 36px;
+    .hero-title .hl{
+      background:linear-gradient(135deg,#ff6b35,#ff9f1c);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
     }
+    .hero-sub{color:rgba(255,255,255,0.5);font-size:0.95rem;max-width:360px;line-height:1.7;margin:0 auto 36px;font-weight:500;}
 
-    .features-list { display: flex; flex-direction: column; gap: 10px; text-align: left; }
-    .feature-item {
-      display: flex; align-items: center; gap: 12px;
-      background: rgba(245,197,24,0.04);
-      border: 1px solid rgba(245,197,24,0.12);
-      border-radius: var(--radius); padding: 12px 16px;
-      font-size: 0.875rem; font-weight: 500;
-      animation: fadeInUp 0.6s ease both;
+    .features-list{display:flex;flex-direction:column;gap:10px;text-align:left;}
+    .feat-item{
+      display:flex;align-items:center;gap:12px;
+      background:rgba(255,107,53,0.05);
+      border:1px solid rgba(255,107,53,0.12);
+      border-radius:12px;padding:12px 16px;
+      font-size:0.85rem;font-weight:600;color:rgba(255,255,255,0.8);
+      animation:fadeInUp 0.6s ease both;
     }
-    .feature-item:nth-child(1) { animation-delay: 0.1s; }
-    .feature-item:nth-child(2) { animation-delay: 0.2s; }
-    .feature-item:nth-child(3) { animation-delay: 0.3s; }
-    .feature-item:nth-child(4) { animation-delay: 0.4s; }
-    .feature-item .fi { font-size: 1.3rem; }
+    .feat-item:nth-child(1){animation-delay:0.1s;}
+    .feat-item:nth-child(2){animation-delay:0.2s;}
+    .feat-item:nth-child(3){animation-delay:0.3s;}
+    .feat-item:nth-child(4){animation-delay:0.4s;}
+    .feat-icon{font-size:1.3rem;flex-shrink:0;}
+    .feat-check{margin-left:auto;color:var(--green);font-size:0.9rem;}
 
-    /* ── LOGIN PANEL ── */
-    .login-panel {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 60px 40px;
-      background: var(--bg);
-      position: relative;
+    .hero-stats{
+      display:flex;gap:32px;justify-content:center;
+      margin-top:36px;padding-top:36px;
+      border-top:1px solid rgba(255,255,255,0.06);
     }
-    .login-box { width: 100%; max-width: 400px; }
+    .hs{text-align:center;}
+    .hs-num{font-size:1.6rem;font-weight:900;color:#fff;}
+    .hs-label{font-size:0.72rem;color:rgba(255,255,255,0.4);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;}
 
-    .top-bar {
-      position: absolute; top: 20px; right: 20px;
-      display: flex; gap: 10px;
+    /* LOGIN PANEL */
+    .login-panel{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:60px 40px;background:var(--bg);position:relative;
     }
+    .top-bar{position:absolute;top:20px;right:20px;display:flex;gap:10px;}
+    .login-box{width:100%;max-width:400px;}
 
-    .login-logo {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 1.55rem; font-weight: 900;
-      margin-bottom: 6px; letter-spacing: -0.03em;
+    .login-logo{
+      display:flex;align-items:center;gap:10px;
+      font-size:1.5rem;font-weight:900;
+      margin-bottom:4px;letter-spacing:-0.03em;
     }
-    .login-logo .lgi { font-size: 2.2rem; }
-    .login-tagline { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 40px; font-weight: 500; }
+    .login-logo .brand-icon{width:40px;height:40px;font-size:1.2rem;border-radius:12px;}
+    .login-tagline{color:var(--text-muted);font-size:0.83rem;margin-bottom:36px;font-weight:500;}
 
-    .login-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: 36px;
-      animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: relative; overflow: hidden;
+    .login-card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      overflow:hidden;
+      animation:scaleIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
     }
-    .login-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary));
-      background-size: 200% 100%;
-      animation: shimmer 2.5s linear infinite;
-    }
-
-    .login-card h2 {
-      font-size: 1.6rem; font-weight: 900;
-      letter-spacing: -0.03em; margin-bottom: 6px;
-    }
-    .login-card > p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px; font-weight: 500; }
+    .login-card-inner{padding:32px;}
+    .login-card h2{font-size:1.5rem;font-weight:900;letter-spacing:-0.03em;margin-bottom:6px;}
+    .login-card>p,.login-card .login-card-inner>p{color:var(--text-muted);font-size:0.875rem;margin-bottom:26px;}
 
     /* Saved user banner */
-    .saved-user-banner {
-      display: none;
-      background: rgba(245,197,24,0.08);
-      border: 1px solid rgba(245,197,24,0.2);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 20px;
-      gap: 12px; align-items: center;
+    .saved-user-banner{
+      display:none;
+      background:var(--primary-glow);
+      border:1px solid rgba(255,107,53,0.25);
+      border-radius:var(--radius);
+      padding:14px 16px;margin-bottom:18px;
+      gap:12px;align-items:center;
     }
-    .saved-user-banner.visible { display: flex; animation: fadeInUp 0.4s ease; }
-    .sub-avatar {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--primary-glow); border: 2px solid var(--primary);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; flex-shrink: 0; overflow: hidden;
+    .saved-user-banner.visible{display:flex;animation:fadeInUp 0.4s ease;}
+    .sub-avatar{
+      width:44px;height:44px;border-radius:50%;
+      background:linear-gradient(135deg,var(--primary),var(--orange2));
+      border:2px solid var(--primary);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;flex-shrink:0;overflow:hidden;font-weight:800;color:#fff;
     }
-    .sub-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    .sub-info { flex: 1; }
-    .sub-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; }
-    .sub-email { font-size: 0.75rem; color: var(--text-muted); }
-    .btn-continue {
-      background: var(--primary); color: #111;
-      border: none; border-radius: 50px;
-      padding: 8px 18px; font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.82rem; font-weight: 800;
-      cursor: pointer; transition: var(--transition-bounce);
-      white-space: nowrap;
+    .sub-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+    .sub-info{flex:1;}
+    .sub-name{font-size:0.9rem;font-weight:700;margin-bottom:2px;}
+    .sub-email{font-size:0.73rem;color:var(--text-muted);}
+    .btn-continue{
+      background:var(--primary);color:#fff;
+      border:none;border-radius:50px;
+      padding:9px 18px;font-family:'Inter',sans-serif;
+      font-size:0.82rem;font-weight:800;
+      cursor:pointer;transition:var(--transition-bounce);
+      white-space:nowrap;position:relative;overflow:hidden;
     }
-    .btn-continue:hover { transform: scale(1.05); background: var(--primary-light); }
+    .btn-continue:hover{transform:scale(1.05);background:var(--primary-light);}
 
-    /* Divider */
-    .or-divider {
-      display: flex; align-items: center; gap: 10px;
-      margin: 20px 0; color: var(--text-dim); font-size: 0.8rem;
-    }
-    .or-divider::before, .or-divider::after {
-      content:''; flex:1; height:1px; background: var(--border);
-    }
-
-    .login-note {
-      font-size: 0.73rem; color: var(--text-dim);
-      text-align: center; margin-top: 18px; line-height: 1.6;
-    }
-    .login-note a { color: var(--primary); text-decoration: none; }
-
-    /* Google button override */
-    .g-signin-wrap {
-      display: flex; justify-content: center;
-    }
+    .g-signin-wrap{display:flex;justify-content:center;}
+    .login-note{font-size:0.72rem;color:var(--text-dim);text-align:center;margin-top:18px;line-height:1.6;}
+    .login-note a{color:var(--primary);text-decoration:none;}
   </style>
 </head>
 <body>
@@ -203,23 +171,35 @@
 <div class="login-page">
   <!-- HERO -->
   <div class="login-hero">
+    <div class="hero-bg"></div>
     <div class="hero-grid"></div>
-    <div class="hero-glow-orb"></div>
-    <div class="hero-content">
-      <div class="hero-emoji-wrap">
-        <span class="hero-emoji">🍔</span>
+    <div class="hero-content fade-in">
+      <div class="hero-food-ring">
+        <span class="hero-food-main">🍔</span>
+        <span class="hero-food-orbit">🍕</span>
+        <span class="hero-food-orbit">🍜</span>
+        <span class="hero-food-orbit">🍗</span>
       </div>
+
+      <div class="hero-badge"><span class="dot"></span>Smart Canteen System</div>
+
       <h1 class="hero-title">
-        <span class="gradient-text">Campus</span><br>Bites
+        Skip the <span class="hl">Queue.</span><br>
+        Eat <span class="hl">Smart.</span>
       </h1>
-      <p class="hero-subtitle">
-        Pre-order your meals, skip the queue & enjoy hot food — the smart way to eat at college.
-      </p>
+      <p class="hero-sub">Order from your college canteen before you even leave class. Hot food ready, zero wait.</p>
+
       <div class="features-list">
-        <div class="feature-item"><span class="fi">🛒</span> Browse full canteen menu online</div>
-        <div class="feature-item"><span class="fi">🥦</span> Veg-only mode for easy filtering</div>
-        <div class="feature-item"><span class="fi">💳</span> Pay via UPI or card instantly</div>
-        <div class="feature-item"><span class="fi">📱</span> Get QR-coded e-bill at reception</div>
+        <div class="feat-item"><span class="feat-icon">🛒</span>Browse full canteen menu online<span class="feat-check">✓</span></div>
+        <div class="feat-item"><span class="feat-icon">⚡</span>Pre-order & skip the rush<span class="feat-check">✓</span></div>
+        <div class="feat-item"><span class="feat-icon">💳</span>Pay via UPI or card instantly<span class="feat-check">✓</span></div>
+        <div class="feat-item"><span class="feat-icon">📱</span>Track order status in real-time<span class="feat-check">✓</span></div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hs"><div class="hs-num">500+</div><div class="hs-label">Students</div></div>
+        <div class="hs"><div class="hs-num">18+</div><div class="hs-label">Menu Items</div></div>
+        <div class="hs"><div class="hs-num">0 min</div><div class="hs-label">Queue Wait</div></div>
       </div>
     </div>
   </div>
@@ -231,54 +211,55 @@
     </div>
     <div class="login-box fade-in">
       <div class="login-logo">
-        <span class="lgi">🍽️</span>
+        <div class="brand-icon">🍽️</div>
         Campus<span style="color:var(--primary)">Bites</span>
       </div>
-      <p class="login-tagline">Your college canteen, now faster.</p>
+      <p class="login-tagline">Your college canteen, now faster ⚡</p>
 
       <div class="login-card">
-        <h2>Welcome Back 👋</h2>
-        <p>Sign in to order your favourite meals</p>
+        <div class="shimmer-line"></div>
+        <div class="login-card-inner">
+          <h2>Welcome Back 👋</h2>
+          <p>Sign in to order your favourite meals</p>
 
-        <!-- Saved user quick-continue -->
-        <div class="saved-user-banner" id="savedUserBanner">
-          <div class="sub-avatar" id="subAvatar">?</div>
-          <div class="sub-info">
-            <div class="sub-name" id="subName">—</div>
-            <div class="sub-email" id="subEmail">—</div>
+          <div class="saved-user-banner" id="savedUserBanner">
+            <div class="sub-avatar" id="subAvatar">?</div>
+            <div class="sub-info">
+              <div class="sub-name" id="subName">—</div>
+              <div class="sub-email" id="subEmail">—</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <button class="btn-continue" onclick="continueAsUser()">Continue →</button>
+              <button onclick="logout()" style="background:none;border:none;color:var(--text-dim);font-size:0.7rem;cursor:pointer;text-decoration:underline;">Not you?</button>
+            </div>
           </div>
-          <div style="display:flex; flex-direction:column; gap:5px;">
-            <button class="btn-continue" onclick="continueAsUser()">Continue →</button>
-            <button onclick="logout()" style="background:none; border:none; color:var(--text-dim); font-size:0.7rem; cursor:pointer; text-decoration:underline;">Not you? Logout</button>
+
+          <div id="orDivider" class="or-divider" style="display:none;margin-bottom:18px;">or sign in with</div>
+
+          <div id="g_id_onload"
+               data-client_id="527171680624-bi73eakcr6ksqlos3p4o970pbcg446k6.apps.googleusercontent.com"
+               data-context="signin"
+               data-ux_mode="popup"
+               data-callback="handleCredentialResponse"
+               data-auto_prompt="false"
+               data-auto_select="false">
           </div>
-        </div>
-
-        <div id="orDivider" class="or-divider" style="display:none;">or sign in with</div>
-
-        <!-- Google Sign-In -->
-        <div id="g_id_onload"
-             data-client_id="527171680624-bi73eakcr6ksqlos3p4o970pbcg446k6.apps.googleusercontent.com"
-             data-context="signin"
-             data-ux_mode="popup"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false"
-             data-auto_select="false">
-        </div>
-        <div class="g-signin-wrap">
-          <div class="g_id_signin"
-               data-type="standard"
-               data-shape="pill"
-               data-theme="outline"
-               data-text="signin_with"
-               data-size="large"
-               data-logo_alignment="left">
+          <div class="g-signin-wrap">
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="pill"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left">
+            </div>
           </div>
-        </div>
 
-        <p class="login-note">
-          By signing in, you agree to our terms of service.<br>
-          Your details are saved automatically for future orders.
-        </p>
+          <p class="login-note">
+            By signing in, you agree to our <a href="#">Terms of Service</a>.<br>
+            Your data is saved securely for future orders.
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -287,148 +268,99 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-  // ── THEME ──
-  function applyTheme(mode) {
-    document.body.classList.toggle('light-mode', mode === 'light');
-    document.getElementById('themeBtn').textContent = mode === 'light' ? '🌙' : '☀️';
-    localStorage.setItem('cbTheme', mode);
+  function applyTheme(mode){
+    document.body.classList.toggle('light-mode',mode==='light');
+    document.getElementById('themeBtn').textContent=mode==='light'?'🌙':'☀️';
+    localStorage.setItem('cbTheme',mode);
   }
-  function toggleTheme() {
-    const cur = localStorage.getItem('cbTheme') || 'dark';
-    applyTheme(cur === 'dark' ? 'light' : 'dark');
+  function toggleTheme(){
+    applyTheme((localStorage.getItem('cbTheme')||'dark')==='dark'?'light':'dark');
   }
-  // Apply on load
-  applyTheme(localStorage.getItem('cbTheme') || 'dark');
+  applyTheme(localStorage.getItem('cbTheme')||'dark');
 
-  // ── SAVED USER CHECK ──
-  window.addEventListener('DOMContentLoaded', async () => {
-    const user = JSON.parse(localStorage.getItem('campusBitesUser') || 'null');
-    if (user) {
-      // Show saved banner with what we have
+  window.addEventListener('DOMContentLoaded',async()=>{
+    const user=JSON.parse(localStorage.getItem('campusBitesUser')||'null');
+    if(user){
       showSavedBanner(user);
-
-      // Try to fetch latest from backend to see if profile is complete
-      try {
-        const res = await fetch(`/api/users/${encodeURIComponent(user.email.toLowerCase())}`, { cache: 'no-store' });
-        if (res.ok) {
-          const fullProfile = await res.json();
-          // Update localStorage with full profile
-          const updatedUser = { ...user, ...fullProfile };
-          localStorage.setItem('campusBitesUser', JSON.stringify(updatedUser));
-          showSavedBanner(updatedUser);
-          
-          // AUTO-REDIRECT: If they have a complete profile, just go to menu
-          if (fullProfile.studentName) {
-            console.log("Auto-redirecting...");
-            setTimeout(() => window.location.href = 'menu.html', 800);
-          }
+      try{
+        const res=await fetch(`/api/users/${encodeURIComponent(user.email.toLowerCase())}`,{cache:'no-store'});
+        if(res.ok){
+          const fp=await res.json();
+          const u={...user,...fp};
+          localStorage.setItem('campusBitesUser',JSON.stringify(u));
+          showSavedBanner(u);
+          if(fp.studentName) setTimeout(()=>window.location.href='dashboard.html',800);
         }
-      } catch (err) {
-        console.warn("Could not sync profile with backend", err);
-      }
+      }catch(e){console.warn('Sync failed',e);}
     }
   });
 
-  function showSavedBanner(user) {
-    const banner = document.getElementById('savedUserBanner');
+  function showSavedBanner(user){
+    const banner=document.getElementById('savedUserBanner');
     banner.classList.add('visible');
-    document.getElementById('subName').textContent = user.studentName || user.googleName || 'Student';
-    document.getElementById('subEmail').textContent = user.email || '';
-    const avatar = document.getElementById('subAvatar');
-    if (user.googlePhoto) {
-      avatar.innerHTML = `<img src="${user.googlePhoto}" alt="avatar" />`;
-    } else {
-      avatar.textContent = (user.studentName || user.googleName || 'S')[0].toUpperCase();
-    }
-    document.getElementById('orDivider').style.display = 'flex';
+    document.getElementById('subName').textContent=user.studentName||user.googleName||'Student';
+    document.getElementById('subEmail').textContent=user.email||'';
+    const av=document.getElementById('subAvatar');
+    if(user.googlePhoto){av.innerHTML=`<img src="${user.googlePhoto}" alt=""/>`;}
+    else{av.textContent=(user.studentName||user.googleName||'S')[0].toUpperCase();}
+    document.getElementById('orDivider').style.display='flex';
   }
 
-  function continueAsUser() {
-    window.location.href = 'menu.html';
-  }
+  function continueAsUser(){window.location.href='dashboard.html';}
 
-  function logout() {
+  function logout(){
     localStorage.removeItem('campusBitesUser');
     localStorage.removeItem('campusBitesCart');
     window.location.reload();
   }
 
-  function parseJwt(token) {
-    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    return JSON.parse(decodeURIComponent(atob(base64).split('').map(c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join('')));
+  function parseJwt(token){
+    const b=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
   }
 
-  async function handleCredentialResponse(response) {
-    const payload = parseJwt(response.credential);
-
-    const googleUser = {
-      googleId: payload.sub,
-      googleName: payload.name,
-      email: payload.email,
-      googlePhoto: payload.picture,
-      loginTime: new Date().toISOString()
-    };
-
-    // 1. Save initial Google info
-    localStorage.setItem('campusBitesUser', JSON.stringify(googleUser));
-
-    // 2. Save to backend and get FULL profile back
-    try {
-      const res = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          email: payload.email.toLowerCase(), 
-          googleId: payload.sub, 
-          googleName: payload.name, 
-          googlePhoto: payload.picture,
-          activity: { type: 'LOGIN', detail: 'User logged in via Google' }
-        })
+  async function handleCredentialResponse(response){
+    const p=parseJwt(response.credential);
+    const gu={googleId:p.sub,googleName:p.name,email:p.email,googlePhoto:p.picture,loginTime:new Date().toISOString()};
+    localStorage.setItem('campusBitesUser',JSON.stringify(gu));
+    try{
+      const res=await fetch('/api/users',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({email:p.email.toLowerCase(),googleId:p.sub,googleName:p.name,googlePhoto:p.picture,activity:{type:'LOGIN',detail:'Google sign-in'}})
       });
-      
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.user) {
-          // 3. Save the FULL profile (including studentName, regNo etc. if they exist)
-          localStorage.setItem('campusBitesUser', JSON.stringify({ ...googleUser, ...data.user }));
-        }
+      if(res.ok){
+        const d=await res.json();
+        if(d.success&&d.user) localStorage.setItem('campusBitesUser',JSON.stringify({...gu,...d.user}));
       }
-    } catch (err) {
-      console.error("Backend sync failed", err);
-    }
-
-    showToast('Welcome, ' + payload.name + '! 🎉', 'success');
-    
-    // Redirect to menu - it will handle profile completion check
-    setTimeout(() => window.location.href = 'menu.html', 1000);
+    }catch(e){console.error('Sync error',e);}
+    showToast('Welcome, '+p.name+'! 🎉','success');
+    setTimeout(()=>window.location.href='menu.html',1000);
   }
 
-  function showToast(msg, type = 'info') {
-    const c = document.getElementById('toastContainer');
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerHTML = (type==='success'?'✅':type==='error'?'❌':'ℹ️') + ' ' + msg;
+  function showToast(msg,type='info'){
+    const c=document.getElementById('toastContainer');
+    const t=document.createElement('div');
+    t.className=`toast ${type}`;
+    t.textContent=msg;
     c.appendChild(t);
-    setTimeout(() => t.remove(), 3500);
+    setTimeout(()=>t.remove(),3500);
   }
 
-  // ── RIPPLE ──
-  document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.btn, .btn-continue');
-    if (!btn) return;
-    const r = document.createElement('span');
-    r.className = 'ripple';
-    const rect = btn.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    r.style.width = r.style.height = size + 'px';
-    r.style.left = (e.clientX - rect.left - size/2) + 'px';
-    r.style.top  = (e.clientY - rect.top  - size/2) + 'px';
+  // Ripple
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest('.btn,.btn-continue');
+    if(!btn)return;
+    const r=document.createElement('span');
+    r.className='ripple';
+    const rect=btn.getBoundingClientRect();
+    const sz=Math.max(rect.width,rect.height);
+    r.style.width=r.style.height=sz+'px';
+    r.style.left=(e.clientX-rect.left-sz/2)+'px';
+    r.style.top=(e.clientY-rect.top-sz/2)+'px';
     btn.appendChild(r);
-    setTimeout(() => r.remove(), 600);
+    setTimeout(()=>r.remove(),600);
   });
-
 </script>
 </body>
 </html>

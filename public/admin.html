@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Panel – Campus Bites</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body{padding-bottom:40px;}
+    .admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+    @media(max-width:900px){.admin-layout{grid-template-columns:1fr;}}
+
+    /* SIDEBAR */
+    .admin-sidebar{
+      background:var(--surface);border-right:1px solid var(--border);
+      padding:24px 16px;position:sticky;top:0;height:100vh;overflow-y:auto;
+    }
+    @media(max-width:900px){.admin-sidebar{display:none;}}
+    .admin-logo{display:flex;align-items:center;gap:10px;font-size:1.1rem;font-weight:900;margin-bottom:32px;letter-spacing:-0.02em;}
+    .admin-logo .brand-icon{width:34px;height:34px;font-size:1rem;}
+    .admin-badge{background:var(--primary);color:#fff;font-size:0.65rem;font-weight:800;padding:2px 7px;border-radius:50px;letter-spacing:0.05em;}
+
+    .sidebar-nav{display:flex;flex-direction:column;gap:4px;}
+    .sidebar-item{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 14px;border-radius:10px;
+      font-size:0.875rem;font-weight:600;
+      color:var(--text-muted);cursor:pointer;
+      transition:var(--transition);text-decoration:none;
+      border:none;background:none;width:100%;text-align:left;
+    }
+    .sidebar-item:hover,.sidebar-item.active{background:var(--primary-glow);color:var(--primary);}
+    .sidebar-item .si-icon{font-size:1.1rem;width:22px;text-align:center;}
+
+    /* MAIN */
+    .admin-main{padding:28px;overflow:auto;}
+    @media(max-width:768px){.admin-main{padding:16px;}}
+
+    /* TOP BAR */
+    .admin-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+    .admin-topbar h1{font-size:1.5rem;font-weight:900;letter-spacing:-0.03em;}
+    .admin-topbar p{color:var(--text-muted);font-size:0.83rem;}
+
+    /* STATS */
+    .admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+    @media(max-width:640px){.admin-stats{grid-template-columns:repeat(2,1fr);}}
+    .as-card{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius-lg);padding:20px;
+      transition:var(--transition);animation:fadeInUp 0.4s ease both;
+    }
+    .as-card:hover{border-color:rgba(255,107,53,0.3);transform:translateY(-3px);}
+    .as-icon{font-size:1.5rem;margin-bottom:8px;}
+    .as-num{font-size:1.6rem;font-weight:900;color:var(--primary);font-family:'JetBrains Mono',monospace;}
+    .as-label{font-size:0.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-top:3px;}
+
+    /* SECTIONS */
+    .admin-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:24px;animation:fadeInUp 0.5s ease both;}
+    .as-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);}
+    .as-title{font-size:0.95rem;font-weight:800;letter-spacing:-0.02em;}
+
+    /* ORDERS TABLE */
+    .orders-table{width:100%;border-collapse:collapse;}
+    .orders-table th{
+      padding:12px 16px;text-align:left;
+      font-size:0.72rem;font-weight:700;
+      color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;
+      border-bottom:1px solid var(--border);background:var(--surface2);
+    }
+    .orders-table td{padding:14px 16px;font-size:0.85rem;border-bottom:1px solid rgba(255,255,255,0.04);}
+    .orders-table tr:last-child td{border-bottom:none;}
+    .orders-table tr:hover td{background:var(--glass);}
+    .ot-order{font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;}
+    .ot-student{font-weight:700;}
+    .ot-dept{font-size:0.72rem;color:var(--text-muted);}
+    .ot-items{font-size:0.78rem;color:var(--text-sub);}
+    .ot-total{font-weight:900;color:var(--primary);font-family:'JetBrains Mono',monospace;}
+
+    /* STATUS SELECT */
+    .status-select{
+      background:var(--surface2);border:1px solid var(--border);
+      border-radius:8px;padding:6px 10px;
+      color:var(--text);font-family:'Inter',sans-serif;font-size:0.78rem;font-weight:600;
+      cursor:pointer;transition:var(--transition);
+    }
+    .status-select:focus{outline:none;border-color:var(--primary);}
+
+    /* MENU MANAGE */
+    .menu-manage-list{display:flex;flex-direction:column;gap:1px;}
+    .mm-item{
+      display:flex;align-items:center;gap:14px;
+      padding:14px 22px;border-bottom:1px solid rgba(255,255,255,0.04);
+      transition:var(--transition);
+    }
+    .mm-item:last-child{border-bottom:none;}
+    .mm-item:hover{background:var(--glass);}
+    .mm-emoji{font-size:1.8rem;flex-shrink:0;}
+    .mm-info{flex:1;min-width:0;}
+    .mm-name{font-size:0.9rem;font-weight:700;letter-spacing:-0.01em;}
+    .mm-meta{font-size:0.73rem;color:var(--text-muted);margin-top:2px;}
+    .mm-price{font-size:0.95rem;font-weight:900;color:var(--primary);font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+    .avail-toggle{
+      position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0;
+    }
+    .avail-toggle input{opacity:0;width:0;height:0;}
+    .avail-slider{
+      position:absolute;inset:0;background:var(--surface3);border-radius:50px;
+      transition:var(--transition);
+    }
+    .avail-slider::before{
+      content:'';position:absolute;left:3px;top:50%;transform:translateY(-50%);
+      width:18px;height:18px;border-radius:50%;background:#fff;transition:var(--transition);
+    }
+    .avail-toggle input:checked+.avail-slider{background:var(--green);}
+    .avail-toggle input:checked+.avail-slider::before{transform:translateY(-50%) translateX(20px);}
+
+    /* ANALYTICS */
+    .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px;}
+    @media(max-width:600px){.analytics-grid{grid-template-columns:1fr;}}
+    .ana-card{background:var(--surface2);border-radius:var(--radius);padding:16px;}
+    .ana-title{font-size:0.8rem;font-weight:700;color:var(--text-muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;}
+    .ana-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+    .ana-label{font-size:0.78rem;font-weight:600;min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ana-bar-wrap{flex:1;background:var(--surface3);border-radius:50px;height:6px;overflow:hidden;}
+    .ana-bar{height:100%;background:linear-gradient(90deg,var(--primary),var(--orange2));border-radius:50px;transition:width 1s ease;}
+    .ana-count{font-size:0.73rem;font-weight:700;color:var(--text-muted);min-width:30px;text-align:right;}
+
+    /* ACCESS GATE */
+    .access-gate{
+      min-height:80vh;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;text-align:center;padding:40px;
+    }
+    .access-icon{font-size:4rem;margin-bottom:16px;}
+    .access-gate h2{font-size:1.4rem;font-weight:800;margin-bottom:8px;}
+    .access-gate p{color:var(--text-muted);margin-bottom:24px;}
+    .pin-input{
+      width:100%;max-width:300px;text-align:center;
+      font-size:1.5rem;letter-spacing:0.3em;
+      background:var(--surface2);border:2px solid var(--border);
+      border-radius:var(--radius);padding:14px;
+      color:var(--text);font-family:'JetBrains Mono',monospace;
+    }
+    .pin-input:focus{outline:none;border-color:var(--primary);}
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <!-- SIDEBAR -->
+  <div class="admin-sidebar">
+    <div class="admin-logo">
+      <div class="brand-icon">🍽️</div>
+      Campus<span style="color:var(--primary)">Bites</span>
+      <span class="admin-badge">ADMIN</span>
+    </div>
+    <div class="sidebar-nav">
+      <button class="sidebar-item active" onclick="showTab('dashboard')"><span class="si-icon">📊</span>Dashboard</button>
+      <button class="sidebar-item" onclick="showTab('orders')"><span class="si-icon">📦</span>Live Orders</button>
+      <button class="sidebar-item" onclick="showTab('menu')"><span class="si-icon">🍽️</span>Menu Items</button>
+      <button class="sidebar-item" onclick="showTab('analytics')"><span class="si-icon">📈</span>Analytics</button>
+      <div style="margin-top:auto;padding-top:20px;">
+        <a href="menu.html" class="sidebar-item"><span class="si-icon">🔙</span>Back to App</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="admin-main">
+
+    <!-- ACCESS GATE -->
+    <div id="accessGate" class="access-gate">
+      <div class="access-icon">🔐</div>
+      <h2>Admin Access</h2>
+      <p>Enter the admin PIN to continue</p>
+      <input type="password" class="pin-input" id="pinInput" maxlength="6" placeholder="••••" onkeydown="if(event.key==='Enter')checkPin()"/>
+      <div style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="checkPin()">Unlock →</button>
+      </div>
+      <p style="margin-top:12px;font-size:0.75rem;color:var(--text-dim);">Default PIN: 1234</p>
+    </div>
+
+    <!-- ADMIN PANEL (hidden until PIN) -->
+    <div id="adminPanel" style="display:none;">
+
+      <!-- TOPBAR -->
+      <div class="admin-topbar">
+        <div>
+          <h1>Admin <span style="color:var(--primary)">Panel</span></h1>
+          <p>Canteen management dashboard</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+          <button class="btn btn-outline btn-sm" onclick="refreshAll()">🔄 Refresh</button>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="admin-stats" id="adminStats">
+        <div class="as-card" style="animation-delay:0.05s"><div class="as-icon">📦</div><div class="as-num" id="asTotalOrders">—</div><div class="as-label">Total Orders</div></div>
+        <div class="as-card" style="animation-delay:0.1s"><div class="as-icon">💰</div><div class="as-num" id="asRevenue">—</div><div class="as-label">Total Revenue</div></div>
+        <div class="as-card" style="animation-delay:0.15s"><div class="as-icon">👥</div><div class="as-num" id="asUsers">—</div><div class="as-label">Students</div></div>
+        <div class="as-card" style="animation-delay:0.2s"><div class="as-icon">🍽️</div><div class="as-num" id="asItems">—</div><div class="as-label">Items Served</div></div>
+      </div>
+
+      <!-- TABS CONTENT -->
+      <div id="tab-dashboard">
+        <div class="admin-section" style="animation-delay:0.1s">
+          <div class="as-header">
+            <div class="as-title">🟢 Today's Orders</div>
+            <span class="status-chip status-confirmed" id="todayBadge">0 orders</span>
+          </div>
+          <div id="todayOrdersContent" style="padding:20px;color:var(--text-muted);text-align:center;">Loading…</div>
+        </div>
+      </div>
+
+      <div id="tab-orders" style="display:none">
+        <div class="admin-section">
+          <div class="as-header">
+            <div class="as-title">📦 All Live Orders</div>
+            <button class="btn btn-secondary btn-sm" onclick="loadOrders()">🔄 Refresh</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="orders-table" id="ordersTable">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Student</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody"><tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">Loading orders…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-menu" style="display:none">
+        <div class="admin-section">
+          <div class="as-header">
+            <div class="as-title">🍽️ Menu Management</div>
+            <span style="font-size:0.78rem;color:var(--text-muted);">Toggle availability</span>
+          </div>
+          <div class="menu-manage-list" id="menuManageList">
+            <div style="padding:30px;text-align:center;color:var(--text-muted);">Loading menu…</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-analytics" style="display:none">
+        <div class="admin-section">
+          <div class="as-header"><div class="as-title">📈 Order Analytics</div></div>
+          <div class="analytics-grid" id="analyticsContent">
+            <div style="color:var(--text-muted);">Loading analytics…</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  const API='';
+  let allOrders=[],allMenu=[];
+
+  function applyTheme(m){
+    document.body.classList.toggle('light-mode',m==='light');
+    const btn=document.getElementById('themeBtn');
+    if(btn)btn.textContent=m==='light'?'🌙':'☀️';
+    localStorage.setItem('cbTheme',m);
+  }
+  function toggleTheme(){applyTheme((localStorage.getItem('cbTheme')||'dark')==='dark'?'light':'dark');}
+  applyTheme(localStorage.getItem('cbTheme')||'dark');
+
+  function checkPin(){
+    const pin=document.getElementById('pinInput').value;
+    if(pin==='1234'||pin==='admin'){
+      document.getElementById('accessGate').style.display='none';
+      document.getElementById('adminPanel').style.display='block';
+      loadAll();
+    } else {
+      showToast('Invalid PIN','error');
+      document.getElementById('pinInput').value='';
+      document.getElementById('pinInput').focus();
+    }
+  }
+
+  async function loadAll(){
+    await Promise.all([loadOrders(),loadMenu()]);
+    renderDashboard();
+  }
+
+  async function refreshAll(){loadAll();showToast('Refreshed!','success');}
+
+  async function loadOrders(){
+    try{
+      const r=await fetch(`${API}/api/orders`,{cache:'no-store'});
+      if(r.ok)allOrders=await r.json();
+      renderOrdersTable();
+      updateStats();
+    }catch{showToast('Could not load orders','error');}
+  }
+
+  async function loadMenu(){
+    try{
+      const r=await fetch(`${API}/api/menu`);
+      if(r.ok)allMenu=await r.json();
+      renderMenuManage();
+    }catch{showToast('Could not load menu','error');}
+  }
+
+  function updateStats(){
+    const revenue=allOrders.reduce((s,o)=>s+parseFloat(o.total||0),0);
+    const items=allOrders.reduce((s,o)=>s+o.items.reduce((ss,i)=>ss+i.qty,0),0);
+    const emails=new Set(allOrders.map(o=>o.email));
+    document.getElementById('asTotalOrders').textContent=allOrders.length;
+    document.getElementById('asRevenue').textContent='₹'+revenue.toFixed(0);
+    document.getElementById('asUsers').textContent=emails.size;
+    document.getElementById('asItems').textContent=items;
+  }
+
+  function renderDashboard(){
+    const today=new Date().toDateString();
+    const todayOrders=allOrders.filter(o=>new Date(o.createdAt).toDateString()===today);
+    document.getElementById('todayBadge').textContent=todayOrders.length+' orders';
+    if(todayOrders.length===0){
+      document.getElementById('todayOrdersContent').innerHTML='<div style="padding:40px;text-align:center;"><div style="font-size:3rem;margin-bottom:12px;">📭</div><p>No orders today yet</p></div>';
+      return;
+    }
+    document.getElementById('todayOrdersContent').innerHTML=`
+      <div style="overflow-x:auto;">
+        <table class="orders-table">
+          <thead><tr><th>Order ID</th><th>Student</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody>
+            ${todayOrders.map(o=>`
+              <tr>
+                <td class="ot-order">${o.orderId}</td>
+                <td><div class="ot-student">${o.studentName||'—'}</div><div class="ot-dept">${o.department||''}</div></td>
+                <td class="ot-items">${o.items.map(i=>`${i.emoji||''}${i.name}×${i.qty}`).join(', ')}</td>
+                <td class="ot-total">₹${parseFloat(o.total).toFixed(0)}</td>
+                <td><span class="status-chip status-${o.status?.toLowerCase()||'confirmed'}">${o.status||'Confirmed'}</span></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    // Analytics
+    renderAnalytics();
+  }
+
+  function renderOrdersTable(){
+    if(allOrders.length===0){
+      document.getElementById('ordersTableBody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">No orders found</td></tr>';
+      return;
+    }
+    document.getElementById('ordersTableBody').innerHTML=allOrders.map(o=>{
+      const d=new Date(o.createdAt);
+      const timeStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+      return `<tr>
+        <td class="ot-order">${o.orderId}</td>
+        <td><div class="ot-student">${o.studentName||'—'}</div><div class="ot-dept">${o.department||''} ${o.regNo?'· '+o.regNo:''}</div></td>
+        <td class="ot-items">${o.items.slice(0,3).map(i=>`${i.emoji||''}${i.name}×${i.qty}`).join(', ')}${o.items.length>3?'…':''}</td>
+        <td class="ot-total">₹${parseFloat(o.total).toFixed(0)}</td>
+        <td>${timeStr}</td>
+        <td>
+          <select class="status-select" onchange="updateStatus('${o.orderId}',this.value)">
+            <option ${o.status==='Confirmed'?'selected':''}>Confirmed</option>
+            <option ${o.status==='Preparing'?'selected':''}>Preparing</option>
+            <option ${o.status==='Ready'?'selected':''}>Ready</option>
+            <option ${o.status==='Completed'?'selected':''}>Completed</option>
+            <option ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+          </select>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function updateStatus(orderId,status){
+    try{
+      await fetch(`${API}/api/orders/${orderId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
+      showToast(`Order ${orderId}: ${status}`,'success');
+    }catch{showToast('Update failed','error');}
+  }
+
+  function renderMenuManage(){
+    document.getElementById('menuManageList').innerHTML=allMenu.map(item=>`
+      <div class="mm-item">
+        <div class="mm-emoji">${item.emoji}</div>
+        <div class="mm-info">
+          <div class="mm-name">${item.name}</div>
+          <div class="mm-meta">${item.category} · <span class="veg-dot ${item.veg?'veg':'nonveg'}" style="display:inline-block;vertical-align:middle;margin-right:4px;"></span>${item.veg?'Veg':'Non-Veg'}</div>
+        </div>
+        <div class="mm-price">₹${item.price.toFixed(0)}</div>
+        <label class="avail-toggle">
+          <input type="checkbox" checked onchange="showToast('${item.name}: '+(this.checked?'Available':'Unavailable'),'info')"/>
+          <span class="avail-slider"></span>
+        </label>
+      </div>`).join('');
+  }
+
+  function renderAnalytics(){
+    const ic={};
+    allOrders.forEach(o=>o.items.forEach(i=>{ic[i.name]=(ic[i.name]||0)+i.qty;}));
+    const sorted=Object.entries(ic).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const max=sorted[0]?sorted[0][1]:1;
+
+    const deptSales={};
+    allOrders.forEach(o=>{const d=o.department||'Unknown';deptSales[d]=(deptSales[d]||0)+parseFloat(o.total||0);});
+    const deptSorted=Object.entries(deptSales).sort((a,b)=>b[1]-a[1]);
+    const maxD=deptSorted[0]?deptSorted[0][1]:1;
+
+    document.getElementById('analyticsContent').innerHTML=`
+      <div class="ana-card">
+        <div class="ana-title">🔥 Top Items by Quantity</div>
+        ${sorted.map(([name,qty])=>`
+          <div class="ana-bar-row">
+            <div class="ana-label">${name}</div>
+            <div class="ana-bar-wrap"><div class="ana-bar" style="width:${(qty/max*100).toFixed(0)}%"></div></div>
+            <div class="ana-count">${qty}</div>
+          </div>`).join('')}
+      </div>
+      <div class="ana-card">
+        <div class="ana-title">🏫 Revenue by Department</div>
+        ${deptSorted.map(([dept,rev])=>`
+          <div class="ana-bar-row">
+            <div class="ana-label">${dept}</div>
+            <div class="ana-bar-wrap"><div class="ana-bar" style="width:${(rev/maxD*100).toFixed(0)}%"></div></div>
+            <div class="ana-count">₹${rev.toFixed(0)}</div>
+          </div>`).join('')}
+      </div>`;
+  }
+
+  function showTab(tab){
+    ['dashboard','orders','menu','analytics'].forEach(t=>{
+      document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
+    });
+    document.querySelectorAll('.sidebar-item').forEach(el=>{
+      el.classList.toggle('active',el.onclick.toString().includes("'"+tab+"'"));
+    });
+    if(tab==='analytics')renderAnalytics();
+  }
+
+  function showToast(msg,type='info'){
+    const c=document.getElementById('toastContainer');
+    const t=document.createElement('div');
+    t.className=`toast ${type}`;t.textContent=msg;
+    c.appendChild(t);setTimeout(()=>t.remove(),3000);
+  }
+
+  // Auto-focus PIN
+  window.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('pinInput').focus();
+  });
+</script>
+</body>
+</html>
