@@ -1,40 +1,53 @@
-🍔 College Canteen Food Ordering App
+# Campus Bites
 
-A simple and efficient food ordering application designed to eliminate long queues in college canteens by allowing students to order food digitally in advance.
+Premium college canteen food ordering frontend built with React, Tailwind CSS, Framer Motion, Lucide Icons, Firebase Authentication, and Firestore.
 
-🚀 Overview
+## What changed
 
-This project aims to improve the canteen experience by reducing waiting time and crowd congestion. Students can browse the menu, place orders, and pick up their food once it's ready—making the entire process faster and more organized.
+- Modern startup-style landing page, dashboard, menu, cart, checkout, orders, and profile/account pages.
+- Firebase Google Authentication with persistent browser sessions.
+- Firestore is the source of truth for user data, not localStorage.
+- Realtime Firestore listeners restore profile, cart, favorites, orders, settings, and notifications after refresh, logout, and device changes.
+- Mobile app-style bottom navigation and responsive layouts.
+- Firestore security rules included in `firestore.rules`.
 
-🎯 Features
-📋 View canteen menu with available items
-🛒 Add items to cart and place orders
-⏱️ Pre-order food to avoid waiting in queues
-📦 Order status tracking (Pending / Preparing / Ready)
-👨‍🍳 Admin/Canteen side to manage orders (optional if you built it)
-💡 Problem Solved
+## Firestore structure
 
-Traditional canteen systems often lead to long queues, wasted time, and confusion during peak hours. This app digitizes the process, ensuring:
+```text
+users/{uid}
+orders/{uid}/history/{orderId}
+favorites/{uid}
+cart/{uid}
+notifications/{uid}
+settings/{uid}
+```
 
-Faster service
-Reduced crowding
-Better order management
-🛠️ Tech Stack
+The Firebase Auth Google UID is the permanent account key.
 
-(Edit this based on what you used)
+## Setup
 
-Frontend: HTML / CSS / JavaScript / React
-Backend: Node.js / Express / PHP
-Database: MySQL / MongoDB
-📌 Use Case
+1. Create a Firebase project.
+2. Enable Authentication -> Google provider.
+3. Create a Firestore database.
+4. Copy `.env.example` to `.env` and fill in the Firebase web app config values.
+5. Install dependencies and run the app:
 
-Perfect for schools, colleges, and small cafeterias where managing large student crowds efficiently is important.
+```bash
+npm install
+npm run dev
+```
 
-🔮 Future Improvements
-Online payment integration 💳
-Real-time notifications 🔔
-Mobile app version 📱
-AI-based demand prediction
-👨‍💻 Author
+## Deploy rules
 
-Michael Sebastian
+Install Firebase CLI and deploy Firestore rules:
+
+```bash
+firebase deploy --only firestore
+```
+
+## Build
+
+```bash
+npm run build
+npm run preview
+```
