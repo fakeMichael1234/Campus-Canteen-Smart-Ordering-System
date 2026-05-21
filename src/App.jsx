@@ -7,8 +7,10 @@ import { useAuth } from "./context/AuthContext";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Dashboard from "./pages/Dashboard";
+import EBill from "./pages/EBill";
 import Landing from "./pages/Landing";
 import Menu from "./pages/Menu";
+import OrderVerify from "./pages/OrderVerify";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
 
@@ -41,7 +43,9 @@ function AnimatedRoutes() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/ebill" element={<EBill />} />
         </Route>
+        <Route path="/verify/:uid/:orderId" element={<OrderVerify />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

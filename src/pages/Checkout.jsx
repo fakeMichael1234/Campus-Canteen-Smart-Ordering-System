@@ -23,7 +23,6 @@ export default function Checkout() {
   const [upiId, setUpiId] = useState(profile?.paymentPreferences?.upiId || "");
   const [savePreference, setSavePreference] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [placedOrder, setPlacedOrder] = useState(null);
   const profileReady = Boolean(profile?.fullName && (profile?.registeredMobile || profile?.phoneNumber));
 
   const profileRows = useMemo(
@@ -37,7 +36,7 @@ export default function Checkout() {
     [profile]
   );
 
-  if (!cartItems.length && !placedOrder) {
+  if (!cartItems.length) {
     return (
       <PageTransition className="section-shell py-10">
         <EmptyState
@@ -60,7 +59,7 @@ export default function Checkout() {
         savePreference,
         reference: `PAY-${Date.now().toString(36).toUpperCase()}`,
       });
-      setPlacedOrder(order);
+      navigate("/ebill", { state: { order } });
     } finally {
       setLoading(false);
     }
@@ -219,39 +218,6 @@ export default function Checkout() {
           </PremiumButton>
         </aside>
       </div>
-
-      <AnimatePresence>
-        {placedOrder ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[90] grid place-items-center bg-ink-900/40 p-4 backdrop-blur-md"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 18 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 18 }}
-              className="max-w-md rounded-[2rem] bg-white p-6 text-center shadow-2xl"
-            >
-              <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-teal-50 text-teal-700">
-                <CheckCircle2 className="h-10 w-10" />
-              </div>
-              <h2 className="mt-5 font-display text-3xl font-extrabold text-ink-900">Order placed</h2>
-              <p className="mt-2 text-sm font-semibold leading-6 text-ink-500">
-                Your order is now saved under orders/{profile?.uid}/history and your cart has been cleared.
-              </p>
-              <div className="mt-5 rounded-2xl bg-pearl-50 p-4 font-display text-lg font-extrabold text-ember-700">
-                {placedOrder.orderId}
-              </div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <PremiumButton onClick={() => navigate("/orders")}>Track order</PremiumButton>
-                <PremiumButton variant="secondary" onClick={() => navigate("/menu")}>Order more</PremiumButton>
-              </div>
-            </motion.div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </PageTransition>
   );
 }

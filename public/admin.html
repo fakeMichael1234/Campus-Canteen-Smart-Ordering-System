@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Admin Panel – Campus Bites</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     body{padding-bottom:40px;}
     .admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
@@ -156,6 +157,7 @@
     <div class="sidebar-nav">
       <button class="sidebar-item active" onclick="showTab('dashboard')"><span class="si-icon">📊</span>Dashboard</button>
       <button class="sidebar-item" onclick="showTab('orders')"><span class="si-icon">📦</span>Live Orders</button>
+      <button class="sidebar-item" onclick="showTab('scanner')"><span class="si-icon">📷</span>Scan QR Bill</button>
       <button class="sidebar-item" onclick="showTab('menu')"><span class="si-icon">🍽️</span>Menu Items</button>
       <button class="sidebar-item" onclick="showTab('analytics')"><span class="si-icon">📈</span>Analytics</button>
       <div style="margin-top:auto;padding-top:20px;">
@@ -245,6 +247,34 @@
           </div>
           <div class="menu-manage-list" id="menuManageList">
             <div style="padding:30px;text-align:center;color:var(--text-muted);">Loading menu…</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-scanner" style="display:none">
+        <div class="admin-section">
+          <div class="as-header">
+            <div class="as-title">📷 Scan Student QR Code</div>
+            <span style="font-size:0.78rem;color:var(--text-muted);">Counter Bill Scanner</span>
+          </div>
+          
+          <div style="padding: 24px;">
+            <!-- SCANNER PREVIEW -->
+            <div id="qrReader" style="width:100%; max-width:480px; margin: 0 auto; border-radius: var(--radius); overflow:hidden; border: 2px dashed var(--border); background: var(--surface2);"></div>
+            
+            <!-- MANUAL SEARCH -->
+            <div style="max-width: 480px; margin: 24px auto 0; text-align: center;">
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Or enter Order ID manually</p>
+              <div style="display:flex; gap:10px;">
+                <input type="text" class="input" id="manualOrderId" placeholder="e.g. ORD17162121..." style="margin:0; text-align:center; font-family:'JetBrains Mono',monospace; font-weight:700;" />
+                <button class="btn btn-primary" onclick="lookupOrder(document.getElementById('manualOrderId').value.trim())">Lookup</button>
+              </div>
+            </div>
+
+            <!-- SCANNED ORDER DETAILS -->
+            <div id="scannedOrderResult" style="display:none; max-width:600px; margin: 32px auto 0; padding: 24px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface2); animation: fadeInUp 0.4s ease;">
+              <!-- Will be populated dynamically -->
+            </div>
           </div>
         </div>
       </div>
@@ -435,13 +465,252 @@
   }
 
   function showTab(tab){
-    ['dashboard','orders','menu','analytics'].forEach(t=>{
-      document.getElementById('tab-'+t).style.display=t===tab?'block':'none';
+    ['dashboard','orders','menu','analytics','scanner'].forEach(t=>{
+      const el = document.getElementById('tab-'+t);
+      if (el) el.style.display=t===tab?'block':'none';
     });
     document.querySelectorAll('.sidebar-item').forEach(el=>{
       el.classList.toggle('active',el.onclick.toString().includes("'"+tab+"'"));
     });
+    
+    if (tab === 'scanner') {
+      startScanner();
+    } else {
+      stopScanner();
+    }
+    
     if(tab==='analytics')renderAnalytics();
+  }
+
+  let html5QrcodeScanner = null;
+
+  function startScanner() {
+    if (html5QrcodeScanner) return;
+    
+    // Clear previous results
+    document.getElementById('scannedOrderResult').style.display = 'none';
+    document.getElementById('manualOrderId').value = '';
+    
+    html5QrcodeScanner = new Html5Qrcode("qrReader");
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+    
+    html5QrcodeScanner.start(
+      { facingMode: "environment" }, 
+      config,
+      (decodedText) => {
+        showToast("QR Scanned successfully!", "success");
+        stopScanner();
+        lookupOrder(decodedText.trim());
+      },
+      (errorMessage) => {
+        // quiet scan
+      }
+    ).catch(err => {
+      console.warn("Camera start failed", err);
+      document.getElementById('qrReader').innerHTML = `
+        <div style="padding: 30px; text-align:center; color: var(--text-dim);">
+          <div style="font-size:2.5rem; margin-bottom:10px;">📷</div>
+          <p>Camera not available or permission denied.</p>
+          <p style="font-size:0.75rem; margin-top:5px;">Please use the manual entry search box below.</p>
+        </div>`;
+    });
+  }
+
+  function stopScanner() {
+    if (html5QrcodeScanner) {
+      html5QrcodeScanner.stop().then(() => {
+        html5QrcodeScanner = null;
+      }).catch(err => console.warn(err));
+    }
+  }
+
+  async function lookupOrder(orderId) {
+    if (!orderId) {
+      showToast("Please enter an Order ID", "error");
+      return;
+    }
+    
+    // Extract the order ID if a composite string was scanned
+    if (orderId.includes(' | ')) {
+      orderId = orderId.split(' | ')[0].trim();
+    }
+
+    const resContainer = document.getElementById('scannedOrderResult');
+    resContainer.style.display = 'block';
+    resContainer.innerHTML = '<div style="padding:20px; text-align:center;"><div class="spinner"></div><p>Searching order…</p></div>';
+
+    try {
+      const r = await fetch(`${API}/api/orders/${orderId}`);
+      if (!r.ok) throw new Error('Order not found');
+      const order = await r.json();
+      renderScannedOrder(order);
+    } catch (err) {
+      resContainer.innerHTML = `
+        <div style="text-align:center; padding: 20px;">
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">❌</div>
+          <h4 style="font-weight:800; color:var(--red);">Order Not Found</h4>
+          <p style="font-size:0.83rem; color:var(--text-muted); margin-top:4px;">No order exists with ID "${orderId}". Make sure the ID is correct or try re-scanning.</p>
+          <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="startScanner()">Scan Again</button>
+        </div>`;
+    }
+  }
+
+  function renderScannedOrder(order) {
+    const d=new Date(order.createdAt);
+    const timeStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+' at '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    
+    const isCompleted = order.status === 'Completed';
+    const isCancelled = order.status === 'Cancelled';
+    
+    let actionButtonsHTML = '';
+    if (!isCompleted && !isCancelled) {
+      actionButtonsHTML = `
+        <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
+          <button class="btn btn-primary" style="flex:1;" onclick="adminPrintReceipt('${order.orderId}')">🖨️ Print Physical Bill</button>
+          <button class="btn btn-green" style="flex:1;" onclick="adminCompleteOrder('${order.orderId}')">✅ Hand Over & Mark Issued</button>
+        </div>
+      `;
+    } else if (isCompleted) {
+      actionButtonsHTML = `
+        <div style="background:var(--green-glow); border: 1px solid rgba(34,197,94,0.2); padding:12px; border-radius: var(--radius-sm); color:var(--green); text-align:center; font-weight:700; margin-top:16px; font-size:0.85rem;">
+          ✓ Physical Bill Issued & Food Handed Over
+        </div>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+          <button class="btn btn-outline btn-sm" style="flex:1;" onclick="adminPrintReceipt('${order.orderId}')">🖨️ Reprint Bill</button>
+          <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="startScanner()">Scan Next</button>
+        </div>
+      `;
+    } else if (isCancelled) {
+      actionButtonsHTML = `
+        <div style="background:rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); padding:12px; border-radius: var(--radius-sm); color:var(--red); text-align:center; font-weight:700; margin-top:16px; font-size:0.85rem;">
+          ❌ This order was Cancelled
+        </div>
+        <button class="btn btn-secondary btn-sm btn-full" style="margin-top:16px;" onclick="startScanner()">Scan Next</button>
+      `;
+    }
+
+    document.getElementById('scannedOrderResult').innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom: 1px solid var(--border); padding-bottom:12px; margin-bottom:16px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-weight:900; color:var(--primary); font-size:1.1rem;">${order.orderId}</span>
+        <span class="status-chip status-${order.status?.toLowerCase()||'confirmed'}">${order.status === 'Completed' ? 'Completed' : (order.status || 'Confirmed')}</span>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; font-size:0.83rem; margin-bottom:18px; padding: 12px; background:var(--surface3); border-radius: var(--radius);">
+        <div><span style="color:var(--text-dim); display:block; font-size:0.7rem; text-transform:uppercase;">Student</span><strong>${order.studentName||'—'}</strong></div>
+        <div><span style="color:var(--text-dim); display:block; font-size:0.7rem; text-transform:uppercase;">Reg No</span><strong>${order.regNo||'—'}</strong></div>
+        <div><span style="color:var(--text-dim); display:block; font-size:0.7rem; text-transform:uppercase;">Department</span><strong>${order.department||'—'}</strong></div>
+        <div><span style="color:var(--text-dim); display:block; font-size:0.7rem; text-transform:uppercase;">Time</span><strong>${timeStr}</strong></div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <h5 style="font-weight:700; font-size:0.8rem; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Items Ordered</h5>
+        ${order.items.map(item => `
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.03);">
+            <span>${item.emoji||'🍽️'} <strong>${item.name}</strong> × ${item.qty}</span>
+            <span style="font-family:monospace;">₹${(parseFloat(item.price)*item.qty).toFixed(2)}</span>
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border); padding-top:12px; font-weight:900; font-size:1rem; color:var(--text);">
+        <span>Total Paid:</span>
+        <span style="color:var(--primary); font-family:monospace;">₹${parseFloat(order.total).toFixed(2)}</span>
+      </div>
+
+      ${actionButtonsHTML}
+    `;
+  }
+
+  async function adminCompleteOrder(orderId) {
+    try {
+      const r = await fetch(`${API}/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'Completed' })
+      });
+      if (r.ok) {
+        showToast("Order marked as Completed & physical bill issued!", "success");
+        lookupOrder(orderId);
+        loadOrders();
+      }
+    } catch {
+      showToast("Failed to update order", "error");
+    }
+  }
+
+  function adminPrintReceipt(orderId) {
+    fetch(`${API}/api/orders/${orderId}`).then(r => r.json()).then(order => {
+      const printWindow = window.open('', '_blank', 'width=350,height=600');
+      const itemsList = order.items.map(i => `
+        <tr>
+          <td style="padding: 5px 0;">${i.name} x${i.qty}</td>
+          <td style="text-align: right; padding: 5px 0;">₹${(i.price*i.qty).toFixed(2)}</td>
+        </tr>
+      `).join('');
+      
+      printWindow.document.write(`
+        <html>
+        <head>
+          <title>Receipt ${order.orderId}</title>
+          <style>
+            body { font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.4; color: #000; padding: 20px; width: 280px; }
+            .center { text-align: center; }
+            .bold { font-weight: bold; }
+            .divider { border-top: 1px dashed #000; margin: 10px 0; }
+            table { width: 100%; border-collapse: collapse; }
+          </style>
+        </head>
+        <body onload="window.print(); window.close();">
+          <div class="center">
+            <span class="bold" style="font-size: 16px;">CAMPUS BITES</span><br>
+            Smart College Canteen<br>
+            *** PHYSICAL RECEIPT ***
+          </div>
+          <div class="divider"></div>
+          <div>
+            <b>Order ID:</b> \${order.orderId}<br>
+            <b>Date:</b> \${new Date(order.createdAt).toLocaleString('en-IN')}<br>
+            <b>Student:</b> \${order.studentName}<br>
+            <b>Reg No:</b> \${order.regNo || '—'}<br>
+            <b>Dept:</b> \${order.department || '—'}
+          </div>
+          <div class="divider"></div>
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align: left;">Item</th>
+                <th style="text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              \${itemsList}
+            </tbody>
+          </table>
+          <div class="divider"></div>
+          <div class="bold" style="display: flex; justify-content: space-between;">
+            <span>Subtotal:</span>
+            <span>₹\${parseFloat(order.subtotal).toFixed(2)}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>GST (5%):</span>
+            <span>₹\${parseFloat(order.gst).toFixed(2)}</span>
+          </div>
+          <div class="bold" style="display: flex; justify-content: space-between; font-size: 13px;">
+            <span>TOTAL PAID:</span>
+            <span>₹\${parseFloat(order.total).toFixed(2)}</span>
+          </div>
+          <div class="divider"></div>
+          <div class="center bold" style="margin-top: 15px;">
+            THANK YOU FOR YOUR ORDER!<br>
+            Enjoy your meal! 🍳
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }).catch(err => {
+      showToast("Error printing receipt", "error");
+    });
   }
 
   function showToast(msg,type='info'){

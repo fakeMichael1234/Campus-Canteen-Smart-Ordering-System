@@ -243,21 +243,23 @@
     container.innerHTML=orders.map((o,i)=>orderCardHTML(o,i)).join('');
   }
 
-  function getTrackStep(status){
-    const steps=['Confirmed','Preparing','Ready','Completed'];
-    return steps.indexOf(status);
-  }
-
   function orderCardHTML(order,idx){
     const d=new Date(order.createdAt);
     const dateStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
     const timeStr=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
     const preview=order.items.map(i=>`${i.emoji||'🍽️'} ${i.name}×${i.qty}`).join(' · ');
     const totalQty=order.items.reduce((s,i)=>s+i.qty,0);
-    const step=getTrackStep(order.status||'Confirmed');
-    const steps=['Confirmed','Preparing','Ready','Completed'];
-    const pct=step<0?0:(step/(steps.length-1)*100);
-    const statusMap={Confirmed:'status-confirmed',Preparing:'status-preparing',Ready:'status-ready',Completed:'status-confirmed',Cancelled:'status-cancelled'};
+    
+    // Status text & color logic
+    let statusText = '🧾 E-Bill Generated';
+    let statusClass = 'status-confirmed';
+    if (order.status === 'Completed') {
+      statusText = '✅ Bill Issued';
+      statusClass = 'status-ready';
+    } else if (order.status === 'Cancelled') {
+      statusText = '❌ Cancelled';
+      statusClass = 'status-cancelled';
+    }
 
     return `
     <div class="order-card" id="oc-${order.orderId}" style="animation-delay:${idx*0.06}s">
@@ -272,24 +274,12 @@
         </div>
         <div class="order-header-right">
           <div class="order-total">₹${parseFloat(order.total).toFixed(0)}</div>
-          <span class="status-chip ${statusMap[order.status]||'status-confirmed'}">${order.status||'Confirmed'}</span>
+          <span class="status-chip ${statusClass}">${statusText}</span>
           <span class="expand-icon">▼</span>
         </div>
       </div>
 
       <div class="order-detail" id="od-${order.orderId}">
-        <!-- TRACKING -->
-        <div class="tracking-bar">
-          <div class="track-line">
-            <div class="track-line-fill" style="width:${pct}%"></div>
-          </div>
-          ${steps.map((s,i)=>`
-            <div class="track-step">
-              <div class="track-dot ${i<step?'done':i===step?'active':''}">${i<step?'✓':i===step?'●':'○'}</div>
-              <div class="track-label ${i<=step?'done':''}">${s}</div>
-            </div>`).join('')}
-        </div>
-
         <!-- STUDENT INFO -->
         <div class="detail-grid">
           <div class="detail-cell"><div class="dk">Student</div><div class="dv">${order.studentName||'—'}</div></div>

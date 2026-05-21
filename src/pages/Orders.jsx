@@ -10,8 +10,6 @@ import {
   formatCurrency,
   formatDate,
   formatTime,
-  getOrderProgress,
-  orderStatusSteps,
 } from "../lib/utils";
 
 export default function Orders() {
@@ -86,8 +84,18 @@ export default function Orders() {
         <div className="space-y-4">
           <AnimatePresence initial={false}>
             {filteredOrders.map((order, index) => {
-              const progress = getOrderProgress(order.status);
               const expanded = openOrder === order.orderId;
+
+              // Status text & color logic
+              let statusText = "🧾 E-Bill Generated";
+              let statusClass = "bg-teal-50 text-teal-700";
+              if (order.status === "Completed" || order.status === "Ready" || order.status === "Delivered") {
+                statusText = "✅ Bill Issued";
+                statusClass = "bg-green-50 text-green-700";
+              } else if (order.status === "Cancelled") {
+                statusText = "❌ Cancelled";
+                statusClass = "bg-red-50 text-red-700";
+              }
 
               return (
                 <motion.article
@@ -110,8 +118,8 @@ export default function Orders() {
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="font-display text-lg font-extrabold text-ink-900">{order.orderId}</p>
-                          <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-black text-teal-700">
-                            {order.status || "Confirmed"}
+                          <span className={`rounded-full px-3 py-1 text-xs font-black ${statusClass}`}>
+                            {statusText}
                           </span>
                         </div>
                         <p className="mt-1 truncate text-sm font-semibold text-ink-500">
@@ -137,32 +145,6 @@ export default function Orders() {
                         className="overflow-hidden border-t border-ink-900/5"
                       >
                         <div className="p-5">
-                          <div className="relative mb-6 rounded-3xl bg-pearl-50 p-5">
-                            <div className="absolute left-8 right-8 top-9 h-1 rounded-full bg-white">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${progress.percent}%` }}
-                                className="h-full rounded-full bg-gradient-to-r from-teal-500 to-ember-500"
-                              />
-                            </div>
-                            <div className="relative grid grid-cols-4 gap-2">
-                              {orderStatusSteps.map((step, stepIndex) => (
-                                <div key={step} className="flex flex-col items-center gap-2 text-center">
-                                  <div
-                                    className={`grid h-9 w-9 place-items-center rounded-full text-xs font-black ${
-                                      stepIndex <= progress.index
-                                        ? "bg-ink-900 text-white shadow-sm"
-                                        : "bg-white text-ink-400"
-                                    }`}
-                                  >
-                                    {stepIndex + 1}
-                                  </div>
-                                  <span className="text-[11px] font-extrabold text-ink-500">{step}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
                           <div className="grid gap-3 md:grid-cols-2">
                             {(order.items || []).map((item) => (
                               <div key={`${order.orderId}-${item.id}`} className="flex items-center gap-3 rounded-2xl bg-pearl-50 p-3">
@@ -193,6 +175,13 @@ export default function Orders() {
                           <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                             <PremiumButton icon={RefreshCcw} onClick={() => reorder(order)}>
                               Reorder
+                            </PremiumButton>
+                            <PremiumButton
+                              variant="secondary"
+                              icon={FileText}
+                              onClick={() => navigate("/ebill", { state: { order } })}
+                            >
+                              View E-Bill
                             </PremiumButton>
                             <button
                               onClick={() => window.print()}

@@ -206,10 +206,10 @@
 <div class="success-overlay" id="successOverlay">
   <div class="success-firework">🎉</div>
   <div class="success-check">✅</div>
-  <div class="success-title">Order Placed!</div>
-  <div class="success-sub">Your food is being prepared 🍳</div>
+  <div class="success-title">Payment Successful!</div>
+  <div class="success-sub">Your E-Bill has been generated 🧾</div>
   <div class="success-orderId" id="successOrderId">ORD—</div>
-  <a href="history.html" class="btn btn-green btn-lg">📋 Track My Order</a>
+  <a href="bill.html" class="btn btn-green btn-lg">🧾 View E-Bill</a>
   <a href="menu.html" class="btn btn-ghost" style="margin-top:10px;color:rgba(255,255,255,0.6);">Order More</a>
 </div>
 
@@ -292,7 +292,7 @@
           subtotal:pendingOrder.subtotal,
           gst:pendingOrder.gst,
           total:pendingOrder.total,
-          paymentMethod:selectedMethod+(selectedUpiApp?' ('+selectedUpiApp+')':''),
+          paymentMethod:selectedMethod+(selectedUpiApp?' ('+selectedUpiApp?')':''),
           paymentRef:payRef,
           status:'Confirmed'
         })
@@ -312,6 +312,11 @@
       // Show success
       document.getElementById('successOrderId').textContent=d.order.orderId;
       document.getElementById('successOverlay').classList.add('show');
+
+      // Auto-redirect to E-Bill after 1.8 seconds
+      setTimeout(() => {
+        window.location.href = 'bill.html';
+      }, 1800);
 
     }catch{
       showToast('Order failed. Please try again.','error');
