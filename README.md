@@ -1,53 +1,37 @@
-# Campus Bites
+# 🍽 Campus Canteen Smart Ordering System
 
-Premium college canteen food ordering frontend built with React, Tailwind CSS, Framer Motion, Lucide Icons, Firebase Authentication, and Firestore.
+A modern food ordering platform designed to reduce canteen queues by allowing students to place orders digitally and receive a QR-based e-bill for verification.
 
-## What changed
+## 🚀 Features
 
-- Modern startup-style landing page, dashboard, menu, cart, checkout, orders, and profile/account pages.
-- Firebase Google Authentication with persistent browser sessions.
-- Firestore is the source of truth for user data, not localStorage.
-- Realtime Firestore listeners restore profile, cart, favorites, orders, settings, and notifications after refresh, logout, and device changes.
-- Mobile app-style bottom navigation and responsive layouts.
-- Firestore security rules included in `firestore.rules`.
+- Google Authentication
+- Firebase Persistence
+- QR-based E-Bill Generation
+- Order History Tracking
+- Real-time Database Updates
+- Admin Verification System
+- Responsive UI
+- Mobile Friendly
 
-## Firestore structure
+## 🛠 Tech Stack
 
-```text
-users/{uid}
-orders/{uid}/history/{orderId}
-favorites/{uid}
-cart/{uid}
-notifications/{uid}
-settings/{uid}
-```
+- React.js
+- Firebase
+- Firestore
+- Tailwind CSS
+- Vercel
 
-The Firebase Auth Google UID is the permanent account key.
+## 🎯 Problem Solved
 
-## Setup
+Long waiting queues in college canteens often waste students' time. This project streamlines food ordering through a digital workflow and QR-based order verification system.
 
-1. Create a Firebase project.
-2. Enable Authentication -> Google provider.
-3. Create a Firestore database.
-4. Copy `.env.example` to `.env` and fill in the Firebase web app config values.
-5. Install dependencies and run the app:
+## 🔗 Live Demo
+
+food-order-web-flax.vercel.app
+
+## ⚙ Installation
 
 ```bash
+git clone repo-url
 npm install
 npm run dev
-```
-
-## Deploy rules
-
-Install Firebase CLI and deploy Firestore rules:
-
-```bash
-firebase deploy --only firestore
-```
-
-## Build
-
-```bash
-npm run build
-npm run preview
-```
