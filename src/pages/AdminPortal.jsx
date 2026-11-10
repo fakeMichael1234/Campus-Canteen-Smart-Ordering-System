@@ -11,7 +11,7 @@ import { formatCurrency } from "../lib/utils";
 export default function AdminPortal() {
  const [user,setUser]=useState(auth?.currentUser||null),[role,setRole]=useState(null),[orders,setOrders]=useState([]),[inventory,setInventory]=useState([]),[seeding,setSeeding]=useState(false);
  useEffect(()=>auth?onAuthStateChanged(auth,setUser):undefined,[]);
- useEffect(()=>{if(user)import("firebase/firestore").then(({doc,getDoc})=>getDoc(doc(db,"staff",user.uid)).then(s=>setRole(s.exists()?s.data():null)));},[user]);
+ useEffect(()=>{if(!user){setRole(null);return;}getDoc(doc(db,"staff",user.uid)).then(s=>setRole(s.exists()?s.data():null));},[user]);
  useEffect(()=>{if(role?.role!=="admin")return;return onSnapshot(collectionGroup(db,"history"),s=>setOrders(s.docs.map(d=>({...d.data(),key:d.id}))));},[role]);
  useEffect(()=>{if(role?.role!=="admin")return;return onSnapshot(collection(db,"inventory"),s=>setInventory(s.docs.map(d=>({id:d.id,...d.data()}))));},[role]);
  const seedInventory=async()=>{setSeeding(true);try{for(const item of menuItems){const stationId=item.category==="Drinks"?"juice":"tiffin";await setDoc(doc(db,"inventory",item.id),{name:item.name,stationId,available:true,updatedAt:serverTimestamp()},{merge:true});}}finally{setSeeding(false);}};
