@@ -2,50 +2,38 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() {
-      return request.auth != null;
-    }
+    function signedIn() { return request.auth != null; }
+    function owns(uid) { return signedIn() && request.auth.uid == uid; }
+    function staffDoc() { return signedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.uid)); }
+    function isAdmin() { return staffDoc() && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role == "admin"; }
+    function assignedTo(stationId) { return staffDoc() && get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.stationId == stationId; }
 
-    function owns(uid) {
-      return signedIn() && request.auth.uid == uid;
-    }
-
-    match /users/{uid} {
-      allow create: if owns(uid)
-        && request.resource.data.uid == uid
-        && request.resource.data.email == request.auth.token.email;
-      allow read, update, delete: if owns(uid);
-    }
-
-    match /orders/{uid} {
-      allow read, write: if owns(uid);
-
-      match /history/{orderId} {
-        allow read, create: if owns(uid);
-        allow update: if owns(uid);
-        allow delete: if false;
-      }
-    }
-
-    match /favorites/{uid} {
-      allow read, write: if owns(uid);
-    }
-
-    match /cart/{uid} {
-      allow read, write: if owns(uid);
-    }
-
-    match /settings/{uid} {
-      allow read, write: if owns(uid);
-    }
-
-    match /notifications/{uid} {
-      allow read, write: if owns(uid);
-    }
-
-    match /menu/{itemId} {
-      allow read: if true;
+    match /staff/{uid} {
+      allow read: if owns(uid) || isAdmin();
       allow write: if false;
     }
+    match /inventory/{itemId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (assignedTo(resource.data.stationId) && request.resource.data.stationId == resource.data.stationId && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["available", "updatedAt"]));
+      allow delete: if isAdmin();
+    }
+    match /users/{uid} {
+      allow create: if owns(uid) && request.resource.data.uid == uid && request.resource.data.email == request.auth.token.email;
+      allow read, update, delete: if owns(uid);
+    }
+    match /orders/{uid} {
+      allow read, write: if owns(uid);
+      match /history/{orderId} {
+        allow read: if owns(uid) || isAdmin() || (staffDoc() && resource.data.stationIds.hasAny([get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.stationId]));
+        allow create, delete: if false;
+        allow update: if isAdmin() || (staffDoc() && resource.data.stationIds.hasAny([get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.stationId]) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["stationStatus", "updatedAt"]));
+      }
+    }
+    match /favorites/{uid} { allow read, write: if owns(uid); }
+    match /cart/{uid} { allow read, write: if owns(uid); }
+    match /settings/{uid} { allow read, write: if owns(uid); }
+    match /notifications/{uid} { allow read, write: if owns(uid); }
+    match /menu/{itemId} { allow read: if true; allow write: if isAdmin(); }
   }
 }

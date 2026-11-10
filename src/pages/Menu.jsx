@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Filter, Leaf, Search, ShoppingCart, SlidersHorizontal, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../lib/firebase";
 import { Link } from "react-router-dom";
 import FoodCard from "../components/FoodCard";
 import PageTransition from "../components/PageTransition";
@@ -14,6 +16,8 @@ export default function Menu() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [vegOnly, setVegOnly] = useState(false);
+  const [availability, setAvailability] = useState({});
+  useEffect(() => { if (!db) return; return onSnapshot(collection(db, "inventory"), (snap) => { const next = {}; snap.docs.forEach((entry) => { next[entry.id] = entry.data().available !== false; }); setAvailability(next); }); }, []);
 
   const filteredItems = useMemo(() => {
     return menuItems.filter((item) => {
@@ -104,7 +108,7 @@ export default function Menu() {
         <motion.div layout className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           <AnimatePresence>
             {filteredItems.map((item, index) => (
-              <FoodCard key={item.id} item={item} index={index} />
+              <FoodCard key={item.id} item={item} index={index} available={availability[item.id] !== false} />
             ))}
           </AnimatePresence>
         </motion.div>
