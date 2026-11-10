@@ -86,7 +86,8 @@ export default function FoodCard({ item, index = 0, available = true }) {
           ))}
         </div>
 
-        <div className="mt-5 min-h-[46px]">\n          {!available ? <div className="rounded-full bg-red-50 px-4 py-3 text-center text-sm font-extrabold text-red-700">Currently unavailable</div> : null}
+        <div className="mt-5 min-h-[46px]">
+          {!available ? <div className="rounded-full bg-red-50 px-4 py-3 text-center text-sm font-extrabold text-red-700">Currently unavailable</div> : null}
           <AnimatePresence mode="wait">
             {!available ? null : quantity > 0 ? (
               <motion.div
