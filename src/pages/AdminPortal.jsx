@@ -5,6 +5,7 @@ import { BarChart3, Boxes, ClipboardList, IndianRupee, LogOut, Store, Users } fr
 import PageTransition from "../components/PageTransition";
 import { auth, db, googleProvider } from "../lib/firebase";
 import { menuItems } from "../data/menu";
+import { getStationForItem } from "../lib/stations";
 import { stations } from "../lib/stations";
 import { formatCurrency } from "../lib/utils";
 
@@ -14,7 +15,7 @@ export default function AdminPortal() {
  useEffect(()=>{if(!user){setRole(null);return;}getDoc(doc(db,"staff",user.uid)).then(s=>setRole(s.exists()?s.data():null));},[user]);
  useEffect(()=>{if(role?.role!=="admin")return;return onSnapshot(collectionGroup(db,"history"),s=>setOrders(s.docs.map(d=>({...d.data(),key:d.id}))));},[role]);
  useEffect(()=>{if(role?.role!=="admin")return;return onSnapshot(collection(db,"inventory"),s=>setInventory(s.docs.map(d=>({id:d.id,...d.data()}))));},[role]);
- const seedInventory=async()=>{setSeeding(true);try{for(const item of menuItems){const stationId=item.category==="Drinks"?"juice":"tiffin";await setDoc(doc(db,"inventory",item.id),{name:item.name,stationId,available:true,updatedAt:serverTimestamp()},{merge:true});}}finally{setSeeding(false);}};
+ const seedInventory=async()=>{setSeeding(true);try{for(const item of menuItems){const stationId=getStationForItem(item);await setDoc(doc(db,"inventory",item.id),{name:item.name,stationId,available:true,updatedAt:serverTimestamp()},{merge:true});}}finally{setSeeding(false);}};
  const paid=orders.filter(o=>["Paid","Captured"].includes(o.paymentStatus));
  const revenue=paid.reduce((s,o)=>s+Number(o.total||0),0);
  const today=paid.filter(o=>{const d=o.createdAt?.toDate?o.createdAt.toDate():new Date(o.createdAtIso||0);return d.toDateString()===new Date().toDateString();});
