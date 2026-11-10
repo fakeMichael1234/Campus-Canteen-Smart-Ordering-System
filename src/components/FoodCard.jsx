@@ -4,13 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import { formatCurrency } from "../lib/utils";
 import PremiumButton from "./PremiumButton";
 
-export default function FoodCard({ item, index = 0 }) {
+export default function FoodCard({ item, index = 0, available = true }) {
   const { addToCart, cartItems, favoriteIds, toggleFavorite, updateCartQuantity } = useAuth();
   const cartItem = cartItems.find((entry) => entry.id === item.id);
   const quantity = cartItem?.quantity || 0;
   const favorite = favoriteIds.includes(item.id);
 
   const setQuantity = async (next) => {
+    if (!available) return;
     if (next <= 0) {
       await updateCartQuantity(item.id, 0);
       return;
@@ -85,9 +86,9 @@ export default function FoodCard({ item, index = 0 }) {
           ))}
         </div>
 
-        <div className="mt-5 min-h-[46px]">
+        <div className="mt-5 min-h-[46px]">\n          {!available ? <div className="rounded-full bg-red-50 px-4 py-3 text-center text-sm font-extrabold text-red-700">Currently unavailable</div> : null}
           <AnimatePresence mode="wait">
-            {quantity > 0 ? (
+            {!available ? null : quantity > 0 ? (
               <motion.div
                 key="qty"
                 initial={{ opacity: 0, scale: 0.92 }}
