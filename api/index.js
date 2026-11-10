@@ -48,7 +48,8 @@ app.post("/api/payments/create-order",requireUser,async(req,res)=>{
    if(!product||!quantity)throw new Error("An item in your cart is invalid.");
    return {...product,quantity,veg:Boolean(row.veg),image:String(row.image||"")};
   });
-  for (const item of items) { const stock = await db.collection("inventory").doc(item.id).get(); if (stock.exists && stock.data().available === false) throw new Error(item.name + " is sold out. Please update your cart."); }\n  const subtotal=items.reduce((sum,item)=>sum+item.price*item.quantity,0),gst=Math.round(subtotal*5)/100,platformFee=2,total=Math.round((subtotal+gst+platformFee)*100);
+  for (const item of items) { const stock = await db.collection("inventory").doc(item.id).get(); if (stock.exists && stock.data().available === false) throw new Error(item.name + " is sold out. Please update your cart."); }
+  const subtotal=items.reduce((sum,item)=>sum+item.price*item.quantity,0),gst=Math.round(subtotal*5)/100,platformFee=2,total=Math.round((subtotal+gst+platformFee)*100);
   const receipt="CB"+Date.now().toString(36).toUpperCase();
   const rpOrder=await razorpay.orders.create({amount:total,currency:"INR",receipt,notes:{uid:req.user.uid}});
   const ref=db.collection("orders").doc(req.user.uid).collection("history").doc(),stationIds=[...new Set(items.map(i=>i.stationId))],profile=req.body.profile||{};
