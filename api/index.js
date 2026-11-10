@@ -6,6 +6,7 @@ const admin = require("firebase-admin");
 
 const app = express();
 app.use(cors({ origin: true }));
+app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 
 const serviceAccountRaw = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
@@ -37,6 +38,35 @@ async function requireUser(req,res,next){
  } catch { return res.status(401).json({error:"Your session expired. Sign in again."}); }
 }
 app.get("/api/health",(_req,res)=>res.json({ok:true,app:"Campus Bites",payments:Boolean(razorpay),firebaseAdmin:Boolean(db)}));
+
+app.post("/api/payments/webhook", async (req, res) => {
+ try {
+  const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  const signature = req.headers["x-razorpay-signature"];
+  if (!secret || !signature || !Buffer.isBuffer(req.body)) return res.status(400).send("Invalid webhook configuration or body.");
+  const expected = crypto.createHmac("sha256", secret).update(req.body).digest("hex");
+  const a = Buffer.from(expected), b = Buffer.from(signature);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return res.status(400).send("Invalid webhook signature.");
+  const event = JSON.parse(req.body.toString("utf8"));
+  const entity = event.payload?.payment?.entity;
+  if (entity?.order_id && db && ["payment.captured", "payment.failed"].includes(event.event)) {
+   const matches = await db.collectionGroup("history").where("razorpayOrderId", "==", entity.order_id).limit(1).get();
+   if (!matches.empty) {
+    const status = event.event === "payment.captured" ? "Paid" : "Failed";
+    await matches.docs[0].ref.update({
+     paymentStatus: status,
+     paymentReference: entity.id || "",
+     razorpayPaymentId: entity.id || "",
+     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+     ...(status === "Paid" ? { paidAt: admin.firestore.FieldValue.serverTimestamp() } : {})
+    });
+   }
+  }
+  return res.json({ received: true });
+ } catch (error) {
+  return res.status(400).send(error.message || "Webhook processing failed.");
+ }
+});
 
 app.post("/api/payments/create-order",requireUser,async(req,res)=>{
  try {
