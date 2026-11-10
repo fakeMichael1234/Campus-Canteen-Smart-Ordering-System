@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { collection, collectionGroup, doc, getDoc, limit, onSnapshot, query, updateDoc, where, serverTimestamp } from "firebase/firestore";
-import { signInWithPopup } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup } from "firebase/auth";
 import { Camera, CheckCircle2, Clock3, LogOut, PackageCheck, ScanLine, Search, Volume2 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import PageTransition from "../components/PageTransition";
@@ -26,7 +26,7 @@ export default function CounterPortal() {
 
   useEffect(() => {
     if (!auth) return;
-    return auth.onAuthStateChanged(setUser);
+    return onAuthStateChanged(auth,setUser);
   }, []);
 
   useEffect(() => {
