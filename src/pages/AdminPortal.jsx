@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { collection, collectionGroup, doc, getDoc, limit, onSnapshot, query, setDoc, serverTimestamp } from "firebase/firestore";
-import { signInWithPopup } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup } from "firebase/auth";
 import { BarChart3, Boxes, ClipboardList, IndianRupee, LogOut, Store, Users } from "lucide-react";
 import PageTransition from "../components/PageTransition";
 import { auth, db, googleProvider } from "../lib/firebase";
@@ -10,7 +10,7 @@ import { formatCurrency } from "../lib/utils";
 
 export default function AdminPortal() {
  const [user,setUser]=useState(auth?.currentUser||null),[role,setRole]=useState(null),[orders,setOrders]=useState([]),[inventory,setInventory]=useState([]),[seeding,setSeeding]=useState(false);
- useEffect(()=>auth?.onAuthStateChanged(setUser),[]);
+ useEffect(()=>auth?onAuthStateChanged(auth,setUser):undefined,[]);
  useEffect(()=>{if(user)import("firebase/firestore").then(({doc,getDoc})=>getDoc(doc(db,"staff",user.uid)).then(s=>setRole(s.exists()?s.data():null)));},[user]);
  useEffect(()=>{if(role?.role!=="admin")return;return onSnapshot(query(collectionGroup(db,"history"),limit(500)),s=>setOrders(s.docs.map(d=>({...d.data(),key:d.id}))));},[role]);
  useEffect(()=>{if(role?.role!=="admin")return;return onSnapshot(collection(db,"inventory"),s=>setInventory(s.docs.map(d=>({id:d.id,...d.data()}))));},[role]);
