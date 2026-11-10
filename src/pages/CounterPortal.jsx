@@ -30,7 +30,7 @@ export default function CounterPortal() {
   }, []);
 
   useEffect(() => {
-    if (!user || !station) return;
+    if (!user || !station) { setRole(null); return; }
     getDoc(doc(db, "staff", user.uid)).then(s => setRole(s.exists() ? s.data() : null));
   }, [user, stationId]);
 
