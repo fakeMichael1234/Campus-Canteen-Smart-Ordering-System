@@ -27,7 +27,13 @@ const menu = [
  {id:"sambar-rice",name:"Sambar Rice",price:50,category:"Rice",stationId:"tiffin"},
  {id:"grill-chicken-half",name:"Grill Chicken Half",price:180,category:"Grill",stationId:"tiffin"},
  {id:"egg-noodles",name:"Egg Noodles",price:100,category:"Noodles",stationId:"tiffin"},
- {id:"cold-coffee",name:"Cold Coffee",price:45,category:"Drinks",stationId:"juice"}
+ {id:"cold-coffee",name:"Cold Coffee",price:45,category:"Drinks",stationId:"juice"},
+ {id:"samosa",name:"Samosa",price:15,category:"Chat",stationId:"chat"},
+ {id:"kachori",name:"Kachori",price:20,category:"Chat",stationId:"chat"},
+ {id:"channa",name:"Channa",price:40,category:"Chat",stationId:"chat"},
+ {id:"brownie",name:"Brownie",price:50,category:"Bakery",stationId:"bakery"},
+ {id:"dairy-milk",name:"Dairy Milk",price:40,category:"Bakery",stationId:"bakery"},
+ {id:"truffle",name:"Truffle",price:70,category:"Bakery",stationId:"bakery"}
 ];
 async function requireUser(req,res,next){
  try {
