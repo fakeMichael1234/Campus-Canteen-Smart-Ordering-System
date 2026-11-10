@@ -10,7 +10,7 @@ export const getStationForItem = (item) => {
   const category = String(item?.category || "").toLowerCase();
   if (category === "breakfast" || /idli|dosa|pongal|vada/.test(id)) return "tiffin";
   if (category === "drinks" || /juice|coffee|shake|lassi/.test(id)) return "juice";
-  if (category === "bakery" || /puff|cake|bread|bun|pastry/.test(id)) return "bakery";
-  if (category === "chat" || /pani-puri|bhel|chaat|samosa-chat/.test(id)) return "chat";
+  if (category === "bakery" || /puff|cake|bread|bun|pastry|brownie|dairy-milk|truffle/.test(id)) return "bakery";
+  if (category === "chat" || /pani-puri|bhel|chaat|samosa|kachori|channa/.test(id)) return "chat";
   return "tiffin";
 };
