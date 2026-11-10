@@ -43,7 +43,7 @@ export default function Checkout(){
       const verify=await fetch("/api/payments/verify",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+await user.getIdToken()},body:JSON.stringify({...payment,orderId:data.orderId})});
       const result=await verify.json();if(!verify.ok)throw new Error(result.error||"Payment verification failed.");
       await clearCart();navigate("/ebill",{replace:true,state:{order:result.order}});
-     }catch(e){setError(e.message);navigate("/payment-result?orderId="+encodeURIComponent(data.orderId));}
+     }catch(e){setError(e.message);}
     },
     modal:{ondismiss:()=>setError("Payment was cancelled. Your order has not been confirmed as paid. You can retry checkout from your cart.")}
    };
